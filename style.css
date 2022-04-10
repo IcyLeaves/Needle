@@ -1,0 +1,30 @@
+h1 {
+  text-align: center;
+}
+#game-board {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.letter-box {
+  border: 2px solid gray;
+  border-radius: 3px;
+  margin: 2px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  height: 3rem;
+  width: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+}
+
+.filled-box {
+  border: 2px solid black;
+}
+
+.letter-row {
+  display: flex;
+}
