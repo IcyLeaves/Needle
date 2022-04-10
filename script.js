@@ -55,10 +55,10 @@ var app = new Vue({
           //决定格子的职业
           let roleid = this.drawOne();
           // if (roleid == 0) console.log("target", i, j);
-          // if (roleid == 3) {
-          //   console.log("jam", i, j);
-          //   box.jamUnshow = true;
-          // }
+          if (roleid == 3) {
+            // console.log("jam", i, j);
+            box.jamUnshow = true;
+          }
           // 点击事件
           {
             var that = this.boxArray;
@@ -98,13 +98,13 @@ var app = new Vue({
                 //增加延迟事件
                 timer = setTimeout(function () {
                   box.children[0].style.display = "flex";
-                }, 1500);
+                }, 1000);
               }
               if (box.jammed) {
                 //[干扰者]
                 timer = setTimeout(function () {
                   box.children[2].style.display = "flex";
-                }, 1500);
+                }, 1000);
               }
             };
             box.onmouseleave = function () {
