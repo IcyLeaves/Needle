@@ -8,6 +8,7 @@ let targetY = Math.floor(Math.random() * COLS);
 console.log(targetX, targetY);
 let randomPeople = [citizenOnClick];
 let notes = ["citizen"];
+let boxArray = [];
 
 function initBoard() {
   let board = document.getElementById("game-board");
@@ -25,26 +26,36 @@ function initBoard() {
         roleid = -1;
       }
       // 点击事件
-      box.onclick = roleid == -1 ? targetOnClick : randomPeople[roleid];
+      {
+        box.onclick =
+          roleid == -1
+            ? function (e) {
+                targetOnClick(e, boxArray);
+              }
+            : randomPeople[roleid];
+      }
       // 悬浮框
-      var notesName = roleid == -1 ? "target" : notes[roleid];
-      let content = document.getElementById(notesName).cloneNode(true);
-      var timer = null;
-      content.setAttribute("id", `${notesName}-${i}-${j}`);
-      box.appendChild(content);
-      box.onmouseenter = function () {
-        if (box.classList.length > 1) {
-          //增加延迟事件
-          timer = setTimeout(function () {
-            box.children[0].style.display = "flex";
-          }, 1500);
-        }
-      };
-      box.onmouseleave = function () {
-        box.children[0].style.display = "none";
-        clearTimeout(timer);
-      };
+      {
+        var notesName = roleid == -1 ? "target" : notes[roleid];
+        let content = document.getElementById(notesName).cloneNode(true);
+        var timer = null;
+        content.setAttribute("id", `${notesName}-${i}-${j}`);
+        box.appendChild(content);
+        box.onmouseenter = function () {
+          if (box.classList.length > 1) {
+            //增加延迟事件
+            timer = setTimeout(function () {
+              box.children[0].style.display = "flex";
+            }, 1500);
+          }
+        };
+        box.onmouseleave = function () {
+          box.children[0].style.display = "none";
+          clearTimeout(timer);
+        };
+      }
       row.appendChild(box);
+      boxArray.push(box);
     }
 
     board.appendChild(row);
