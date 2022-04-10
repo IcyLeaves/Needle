@@ -6,28 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Needle</title>
     <link rel="stylesheet" href="style.css" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
-    <!-- 所有职业css -->
+    <!-- 所有职业css UPDATE HERE-->
     <link rel="stylesheet" href="target/target.css" />
     <link rel="stylesheet" href="citizen/citizen.css" />
+    <link rel="stylesheet" href="detective/detective.css" />
   </head>
   <body>
     <div id="app">
-      <h1>Needle v1.0</h1>
+      <h1>Needle v1.1</h1>
 
       <div id="game-board"></div>
       <div id="chances">
         <span><image src="./chances.png"></image></span>
         <span> × {{chances}}</span>
       </div>
-      <!-- 所有职业悬浮框说明 -->
+      <!-- 所有职业悬浮框说明 UPDATE HERE-->
       <div id="target" class="notes">
         <div class="letter-box target"></div>
         <div class="notes-right">
@@ -42,14 +35,19 @@
           <div class="notes-content">没有任何效果</div>
         </div>
       </div>
+      <div id="detective" class="notes">
+        <div class="letter-box detective"></div>
+        <div class="notes-right">
+          <div style="color: #542c0b" class="notes-title">侦探</div>
+          <div class="notes-content">
+            <span><image src="./chances.png"></image></span>
+            <span> + 2</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="jquery.min.js"></script>
     <script src="script.js" type="module"></script>
     <script src="vue.js"></script>
   </body>

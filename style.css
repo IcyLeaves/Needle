@@ -12,6 +12,9 @@ h1 {
   justify-content: center;
   margin-top: 20px;
 }
+#chances span {
+  margin-left: 10px;
+}
 .notes {
   position: relative;
   z-index: 101;

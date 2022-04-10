@@ -1,12 +1,14 @@
+//UPDATE HERE
 import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
+import { detectiveOnClick } from "./detective/detective.js";
+
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 63];
-let randomPeople = [targetOnClick, citizenOnClick];
-let notes = ["target", "citizen"];
-let boxArray = [];
+const NUMCONFIG = [1, 43, 20]; //UPDATE HERE
+let randomPeople = [targetOnClick, citizenOnClick, detectiveOnClick]; //UPDATE HERE
+let notes = ["target", "citizen", "detective"]; //UPDATE HERE
 let swap = (arr, i, j) => {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 };
@@ -15,6 +17,7 @@ var app = new Vue({
   data: {
     chances: 16,
     decks: [],
+    boxArray: [],
   },
   methods: {
     initDeck() {
@@ -52,7 +55,7 @@ var app = new Vue({
               if (this.chances > 0) {
                 this.chances--;
                 //开始执行效果
-                randomPeople[roleid](e, boxArray);
+                randomPeople[roleid](e, app);
               }
             };
           }
@@ -81,7 +84,7 @@ var app = new Vue({
         }
 
         board.appendChild(row);
-        boxArray.push(boxRow);
+        this.boxArray.push(boxRow);
       }
     },
   },
