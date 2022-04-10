@@ -1,0 +1,11 @@
+.jam {
+  background-color: #4d7bd6;
+}
+#jam-sign {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  display: none;
+  cursor: default;
+  pointer-events: none;
+}

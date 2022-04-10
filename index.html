@@ -10,10 +10,11 @@
     <link rel="stylesheet" href="target/target.css" />
     <link rel="stylesheet" href="citizen/citizen.css" />
     <link rel="stylesheet" href="detective/detective.css" />
+    <link rel="stylesheet" href="jam/jam.css" />
   </head>
   <body>
     <div id="app">
-      <h1>Needle v1.1</h1>
+      <h1>Needle v1.2</h1>
 
       <div id="game-board"></div>
       <div id="chances">
@@ -42,6 +43,25 @@
           <div class="notes-content">
             <span><image src="./chances.png"></image></span>
             <span> + 2</span>
+          </div>
+        </div>
+      </div>
+      <div id="jam" class="notes bad">
+        <div class="letter-box jam"></div>
+        <div class="notes-right">
+          <div style="color: #4d7bd6" class="notes-title">干扰者</div>
+          <div class="notes-content"><b>现身前</b>，相邻4格需要调查两次。</div>
+        </div>
+      </div>
+      <span id="jam-sign" style="display: none">❓</span>
+      <div id="jam-notes" class="notes bad">
+        <div class="letter-box">❓</div>
+        <div class="notes-right">
+          <div style="color: #4d7bd6" class="notes-title">
+            <i>你受到了干扰</i>
+          </div>
+          <div class="notes-content">
+            再调查一次吧！注意相邻四格至少有一个干扰者
           </div>
         </div>
       </div>
