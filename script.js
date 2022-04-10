@@ -2,64 +2,91 @@ import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
 const ROWS = 8;
 const COLS = 8;
-
-let targetX = Math.floor(Math.random() * ROWS);
-let targetY = Math.floor(Math.random() * COLS);
-console.log(targetX, targetY);
-let randomPeople = [citizenOnClick];
-let notes = ["citizen"];
+// 必须确保num相加=ROWS*COLS
+const NUMCONFIG = [1, 63];
+let randomPeople = [targetOnClick, citizenOnClick];
+let notes = ["target", "citizen"];
 let boxArray = [];
-
-function initBoard() {
-  let board = document.getElementById("game-board");
-
-  for (let i = 0; i < ROWS; i++) {
-    let row = document.createElement("div");
-    row.className = "letter-row";
-
-    for (let j = 0; j < COLS; j++) {
-      let box = document.createElement("div");
-      box.className = "letter-box";
-      //决定格子的职业
-      let roleid = Math.floor(Math.random() * randomPeople.length);
-      if (i == targetX && j == targetY) {
-        roleid = -1;
+let swap = (arr, i, j) => {
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+};
+var app = new Vue({
+  el: "#app",
+  data: {
+    chances: 16,
+    decks: [],
+  },
+  methods: {
+    initDeck() {
+      //生成洗牌数组
+      this.decks = [];
+      for (var i = 0; i < NUMCONFIG.length; i++) {
+        for (var j = 0; j < NUMCONFIG[i]; j++) {
+          this.decks.push(i);
+        }
       }
-      // 点击事件
-      {
-        box.onclick =
-          roleid == -1
-            ? function (e) {
-                targetOnClick(e, boxArray);
+    },
+    drawOne() {
+      var n = this.decks.length;
+      var i = Math.floor(Math.random() * this.decks.length);
+      swap(this.decks, i, n - 1);
+      return this.decks.pop();
+    },
+    initBoard() {
+      let board = document.getElementById("game-board");
+
+      for (let i = 0; i < ROWS; i++) {
+        let row = document.createElement("div");
+        row.className = "letter-row";
+        let boxRow = [];
+        for (let j = 0; j < COLS; j++) {
+          let box = document.createElement("div");
+          box.className = "letter-box";
+          //决定格子的职业
+          let roleid = this.drawOne();
+          if (roleid == 0) console.log(i, j);
+          // 点击事件
+          {
+            box.onclick = (e) => {
+              //减少一次猜测次数
+              if (this.chances > 0) {
+                this.chances--;
+                //开始执行效果
+                randomPeople[roleid](e, boxArray);
               }
-            : randomPeople[roleid];
-      }
-      // 悬浮框
-      {
-        var notesName = roleid == -1 ? "target" : notes[roleid];
-        let content = document.getElementById(notesName).cloneNode(true);
-        var timer = null;
-        content.setAttribute("id", `${notesName}-${i}-${j}`);
-        box.appendChild(content);
-        box.onmouseenter = function () {
-          if (box.classList.length > 1) {
-            //增加延迟事件
-            timer = setTimeout(function () {
-              box.children[0].style.display = "flex";
-            }, 1500);
+            };
           }
-        };
-        box.onmouseleave = function () {
-          box.children[0].style.display = "none";
-          clearTimeout(timer);
-        };
+          // 悬浮框
+          {
+            var notesName = notes[roleid];
+            let content = document.getElementById(notesName).cloneNode(true);
+            var timer = null;
+            content.setAttribute("id", `${notesName}-${i}-${j}`);
+            box.appendChild(content);
+            box.onmouseenter = function () {
+              if (box.classList.length > 1) {
+                //增加延迟事件
+                timer = setTimeout(function () {
+                  box.children[0].style.display = "flex";
+                }, 1500);
+              }
+            };
+            box.onmouseleave = function () {
+              box.children[0].style.display = "none";
+              clearTimeout(timer);
+            };
+          }
+          row.appendChild(box);
+          boxRow.push(box);
+        }
+
+        board.appendChild(row);
+        boxArray.push(boxRow);
       }
-      row.appendChild(box);
-      boxArray.push(box);
-    }
-
-    board.appendChild(row);
-  }
-}
-
-initBoard();
+    },
+  },
+  mounted: function () {
+    this.initDeck();
+    this.initBoard();
+  },
+});

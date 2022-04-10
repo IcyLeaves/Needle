@@ -7,19 +7,22 @@ h1 {
   align-items: center;
   flex-direction: column;
 }
+#chances {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 .notes {
-  position: absolute;
+  position: relative;
   z-index: 101;
   background-color: white;
-  height: 5rem;
   white-space: nowrap;
-  top: -6rem;
-  left: -2rem;
+  top: -4rem;
   display: none;
   box-shadow: 0px 0px 10px rgb(94, 94, 94);
   border-radius: 5px;
 
-  padding: 5px 20px;
+  padding: 10px 20px;
 
   justify-content: center;
   align-items: center;

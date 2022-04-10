@@ -19,24 +19,31 @@
     <link rel="stylesheet" href="citizen/citizen.css" />
   </head>
   <body>
-    <h1>Needle v0.2</h1>
+    <div id="app">
+      <h1>Needle v1.0</h1>
 
-    <div id="game-board"></div>
-    <!-- 所有职业悬浮框说明 -->
-    <div id="target" class="notes">
-      <div class="letter-box target"></div>
-      <div class="notes-right">
-        <div style="color: #6aaa64" class="notes-title">目标</div>
-        <div class="notes-content">这就是你要找的人</div>
+      <div id="game-board"></div>
+      <div id="chances">
+        <span><image src="./chances.png"></image></span>
+        <span> × {{chances}}</span>
+      </div>
+      <!-- 所有职业悬浮框说明 -->
+      <div id="target" class="notes">
+        <div class="letter-box target"></div>
+        <div class="notes-right">
+          <div style="color: #6aaa64" class="notes-title">目标</div>
+          <div class="notes-content">这就是你要找的人</div>
+        </div>
+      </div>
+      <div id="citizen" class="notes">
+        <div class="letter-box citizen"></div>
+        <div class="notes-right">
+          <div style="color: #898989" class="notes-title">市民</div>
+          <div class="notes-content">没有任何效果</div>
+        </div>
       </div>
     </div>
-    <div id="citizen" class="notes">
-      <div class="letter-box citizen"></div>
-      <div class="notes-right">
-        <div style="color: #898989" class="notes-title">市民</div>
-        <div class="notes-content">没有任何效果</div>
-      </div>
-    </div>
+
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -44,5 +51,6 @@
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="script.js" type="module"></script>
+    <script src="vue.js"></script>
   </body>
 </html>
