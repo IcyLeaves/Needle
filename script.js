@@ -3,17 +3,19 @@ import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
 import { detectiveOnClick } from "./detective/detective.js";
 import { jamOnClick, jamCheck } from "./jam/jam.js";
+import { crazyOnClick } from "./crazy/crazy.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 43, 15, 5]; //UPDATE HERE
+const NUMCONFIG = [1, 40, 15, 5, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
   detectiveOnClick,
   jamOnClick,
+  crazyOnClick,
 ]; //UPDATE HERE
-let notes = ["target", "citizen", "detective", "jam"]; //UPDATE HERE
+let notes = ["target", "citizen", "detective", "jam", "crazy"]; //UPDATE HERE
 let swap = (arr, i, j) => {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 };
@@ -54,9 +56,8 @@ var app = new Vue({
           // box.setAttribute("data-j", j);
           //决定格子的职业
           let roleid = this.drawOne();
-          // if (roleid == 0) console.log("target", i, j);
+          if (roleid != 1) console.log(notes[roleid], i, j);
           if (roleid == 3) {
-            // console.log("jam", i, j);
             box.jamUnshow = true;
           }
           // 点击事件

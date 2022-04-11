@@ -4,6 +4,8 @@ function jamOnClick(e, context, i, j) {
   // let i = e.srcElement.getAttribute("data-i");
   // let j = e.srcElement.getAttribute("data-j");
   context.boxArray[i][j].jamUnshow = false;
+
+  context.isLastDark = true; //[疯子]
 }
 function jamCheck(e, boxArray, i, j) {
   let M = boxArray.length;
