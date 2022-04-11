@@ -4,18 +4,20 @@ import { citizenOnClick } from "./citizen/citizen.js";
 import { detectiveOnClick } from "./detective/detective.js";
 import { jamOnClick, jamCheck } from "./jam/jam.js";
 import { crazyOnClick } from "./crazy/crazy.js";
+import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 40, 15, 5, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 37, 15, 5, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
   detectiveOnClick,
   jamOnClick,
   crazyOnClick,
+  sheriffOnClick,
 ]; //UPDATE HERE
-let notes = ["target", "citizen", "detective", "jam", "crazy"]; //UPDATE HERE
+let notes = ["target", "citizen", "detective", "jam", "crazy", "sheriff"]; //UPDATE HERE
 let swap = (arr, i, j) => {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 };
@@ -25,6 +27,7 @@ var app = new Vue({
     chances: 16,
     decks: [],
     boxArray: [],
+    isLastDark: false,
   },
   methods: {
     initDeck() {
@@ -71,12 +74,16 @@ var app = new Vue({
                 if (!that[i][j].jammed && jamCheck(e, that, i, j)) {
                   that[i][j].jammed = true;
                   box.children[1].style.display = "inline";
+                  this.isLastDark = false;
                   return;
                 }
                 that[i][j].jammed = false;
                 box.children[1].style.display = "none";
+                //[警长]
+                sheriffCheck(app, i, j);
                 //开始执行效果
                 randomPeople[roleid](e, app, i, j);
+                box.shown = true;
               }
             };
           }
