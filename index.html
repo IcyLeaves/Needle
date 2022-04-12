@@ -13,82 +13,104 @@
     <link rel="stylesheet" href="jam/jam.css" />
     <link rel="stylesheet" href="crazy/crazy.css" />
     <link rel="stylesheet" href="sheriff/sheriff.css" />
+    <link rel="stylesheet" href="killer/killer.css" />
   </head>
   <body>
     <div id="app">
-      <h1>Needle v1.4</h1>
+      <div style="width: 100vw"><h1>Needle v1.4</h1></div>
 
-      <div id="game-board"></div>
+      <div style="width: 100vw; display: flex">
+        <div id="left-side">
+          <b style="margin: 0 0 20px 0; font-size: 20px">说明</b>
+          <div id="infos"></div>
+        </div>
+        <div id="game-board"></div>
+      </div>
+
       <div id="chances">
         <span><image src="./chances.png"></image></span>
         <span> × {{chances}}</span>
       </div>
       <!-- 所有职业悬浮框说明 UPDATE HERE-->
-      <div id="target" class="notes">
-        <div class="letter-box target"></div>
-        <div class="notes-right">
-          <div style="color: #6aaa64" class="notes-title">目标</div>
-          <div class="notes-content">这就是你要找的人</div>
+      <div id="roles" style="display: none">
+        <div id="target" class="notes">
+          <div class="letter-box target"></div>
+          <div class="notes-right">
+            <div style="color: #6aaa64" class="notes-title">目标</div>
+            <div class="notes-content">这就是你要找的人</div>
+          </div>
         </div>
-      </div>
-      <div id="citizen" class="notes">
-        <div class="letter-box citizen"></div>
-        <div class="notes-right">
-          <div style="color: #898989" class="notes-title">市民</div>
-          <div class="notes-content">没有任何效果</div>
+        <div id="citizen" class="notes">
+          <div class="letter-box citizen"></div>
+          <div class="notes-right">
+            <div style="color: #898989" class="notes-title">市民</div>
+            <div class="notes-content">没有任何效果</div>
+          </div>
         </div>
-      </div>
-      <div id="detective" class="notes">
-        <div class="letter-box detective"></div>
-        <div class="notes-right">
-          <div style="color: #542c0b" class="notes-title">侦探</div>
-          <div class="notes-content">
-            <span><image src="./chances.png"></image></span>
-            <span> + 2</span>
+        <div id="detective" class="notes">
+          <div class="letter-box detective"></div>
+          <div class="notes-right">
+            <div style="color: #542c0b" class="notes-title">侦探</div>
+            <div class="notes-content">
+              <span><image src="./chances.png"></image></span>
+              <span> + 2</span>
+            </div>
+          </div>
+        </div>
+        <div id="jam" class="notes bad">
+          <div class="letter-box jam"></div>
+          <div class="notes-right">
+            <div style="color: #4d7bd6" class="notes-title">干扰者</div>
+            <div class="notes-content">
+              <b>现身前</b>，相邻4格需要调查两次。
+            </div>
+          </div>
+        </div>
+        <div id="jam-notes" class="notes bad">
+          <div class="letter-box">❓</div>
+          <div class="notes-right">
+            <div style="color: #4d7bd6" class="notes-title">
+              <i>你受到了干扰</i>
+            </div>
+            <div class="notes-content">
+              再调查一次吧！注意相邻四格至少有一个干扰者
+            </div>
+          </div>
+        </div>
+        <div id="crazy" class="notes bad">
+          <div class="letter-box crazy"></div>
+          <div class="notes-right">
+            <div style="color: #e44f26" class="notes-title">疯子</div>
+            <div class="notes-content">
+              如果你上一次调查使得一名邪恶势力现身，你失去所有<span
+                ><image src="./chances.png"></image
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div id="sheriff" class="notes">
+          <div class="letter-box sheriff"></div>
+          <div class="notes-right">
+            <div style="color: #0c34fb" class="notes-title">警长</div>
+            <div class="notes-content">
+              周围的格子都现身后，将你现在的<span
+                ><image src="./chances.png"></image></span
+              >翻倍
+            </div>
+          </div>
+        </div>
+        <div id="killer" class="notes bad">
+          <div class="letter-box killer"></div>
+          <div class="notes-right">
+            <div style="color: #e06c60" class="notes-title">杀手</div>
+            <div class="notes-content">
+              现身后，你的后三次调查如果使目标现身，反而输掉游dfs戏
+            </div>
           </div>
         </div>
       </div>
-      <div id="jam" class="notes bad">
-        <div class="letter-box jam"></div>
-        <div class="notes-right">
-          <div style="color: #4d7bd6" class="notes-title">干扰者</div>
-          <div class="notes-content"><b>现身前</b>，相邻4格需要调查两次。</div>
-        </div>
-      </div>
-      <span id="jam-sign" style="display: none">❓</span>
-      <div id="jam-notes" class="notes bad">
-        <div class="letter-box">❓</div>
-        <div class="notes-right">
-          <div style="color: #4d7bd6" class="notes-title">
-            <i>你受到了干扰</i>
-          </div>
-          <div class="notes-content">
-            再调查一次吧！注意相邻四格至少有一个干扰者
-          </div>
-        </div>
-      </div>
-      <div id="crazy" class="notes bad">
-        <div class="letter-box crazy"></div>
-        <div class="notes-right">
-          <div style="color: #e44f26" class="notes-title">疯子</div>
-          <div class="notes-content">
-            如果你上一次调查使得一名邪恶势力现身，你失去所有<span
-              ><image src="./chances.png"></image
-            ></span>
-          </div>
-        </div>
-      </div>
-      <div id="sheriff" class="notes">
-        <div class="letter-box sheriff"></div>
-        <div class="notes-right">
-          <div style="color: #0c34fb" class="notes-title">警长</div>
-          <div class="notes-content">
-            周围的格子都现身后，将你现在的<span
-              ><image src="./chances.png"></image></span
-            >翻倍
-          </div>
-        </div>
-      </div>
+      <!-- 所有职业小标志 UPDATE HERE -->
+      <div id="signs" style="display: none"><span id="jammed">❓</span></div>
     </div>
 
     <script src="jquery.min.js"></script>

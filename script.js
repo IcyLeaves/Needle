@@ -5,10 +5,11 @@ import { detectiveOnClick } from "./detective/detective.js";
 import { jamOnClick, jamCheck } from "./jam/jam.js";
 import { crazyOnClick } from "./crazy/crazy.js";
 import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
+import { killerOnClick } from "./killer/killer.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 37, 15, 5, 3, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 34, 15, 5, 3, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -16,8 +17,17 @@ let randomPeople = [
   jamOnClick,
   crazyOnClick,
   sheriffOnClick,
+  killerOnClick,
 ]; //UPDATE HERE
-let notes = ["target", "citizen", "detective", "jam", "crazy", "sheriff"]; //UPDATE HERE
+let notes = [
+  "target",
+  "citizen",
+  "detective",
+  "jam",
+  "crazy",
+  "sheriff",
+  "killer",
+]; //UPDATE HERE
 let swap = (arr, i, j) => {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 };
@@ -25,11 +35,43 @@ var app = new Vue({
   el: "#app",
   data: {
     chances: 16,
+    infos: [],
     decks: [],
     boxArray: [],
     isLastDark: false,
   },
   methods: {
+    clearInfo() {
+      var infos = document.getElementById("infos");
+      infos.innerHTML = "";
+    },
+    addInfo(key) {
+      var roleDiv = document.getElementById(key).cloneNode(true);
+      roleDiv.setAttribute("id", `${key}-clone`);
+      var infos = document.getElementById("infos");
+      infos.appendChild(roleDiv);
+    },
+    refreshInfos(box) {
+      this.clearInfo();
+      for (var key in box.infos) {
+        this.addInfo(key);
+      }
+    },
+    deleteSign(i, j) {
+      var signDiv = document.getElementById(`sign-${i}-${j}`);
+      signDiv.innerHTML = "";
+    },
+    addSign(key, i, j) {
+      var signDiv = document.getElementById(`sign-${i}-${j}`);
+      var sign = document.getElementById(key).cloneNode(true);
+      signDiv.appendChild(sign);
+    },
+    refreshSigns(i, j) {
+      this.deleteSign(i, j);
+      for (var key in this.boxArray[i][j].signs) {
+        this.addSign(key, i, j);
+      }
+    },
     initDeck() {
       //生成洗牌数组
       this.decks = [];
@@ -38,6 +80,13 @@ var app = new Vue({
           this.decks.push(i);
         }
       }
+    },
+    drawBoard() {
+      let board = document.getElementById("game-board");
+      board.setAttribute(
+        "style",
+        `width:calc(${COLS} * 3rem + ${COLS} * 4px);`
+      );
     },
     drawOne() {
       var n = this.decks.length;
@@ -54,6 +103,8 @@ var app = new Vue({
         let boxRow = [];
         for (let j = 0; j < COLS; j++) {
           let box = document.createElement("div");
+          box.infos = {};
+          box.signs = {};
           box.className = "letter-box";
           // box.setAttribute("data-i", i);
           // box.setAttribute("data-j", j);
@@ -68,57 +119,61 @@ var app = new Vue({
             var that = this.boxArray;
             box.onclick = (e) => {
               //减少一次猜测次数
-              if (this.chances > 0) {
+              if (!box.shown && this.chances > 0) {
                 this.chances--;
                 //[干扰者]
-                if (!that[i][j].jammed && jamCheck(e, that, i, j)) {
-                  that[i][j].jammed = true;
-                  box.children[1].style.display = "inline";
+                if (!that[i][j].signs["jammed"] && jamCheck(e, that, i, j)) {
+                  that[i][j].signs["jammed"] = true;
+                  that[i][j].infos["jam-notes"] = true;
+                  this.refreshSigns(i, j);
                   this.isLastDark = false;
                   return;
                 }
-                that[i][j].jammed = false;
-                box.children[1].style.display = "none";
+                delete that[i][j].signs["jammed"];
+                delete that[i][j].infos["jam-notes"];
                 //[警长]
                 sheriffCheck(app, i, j);
                 //开始执行效果
                 randomPeople[roleid](e, app, i, j);
                 box.shown = true;
+                this.refreshInfos(box);
+                this.refreshSigns(i, j);
               }
             };
           }
-          // 悬浮框
+          // 孩子节点
           {
-            var notesName = notes[roleid];
-            let roleContent = document
-              .getElementById(notesName)
-              .cloneNode(true);
-            let jamSign = document.getElementById("jam-sign").cloneNode(true);
-            let jamNotes = document.getElementById("jam-notes").cloneNode(true);
-
-            var timer = null;
-            roleContent.setAttribute("id", `${notesName}-${i}-${j}`);
-            box.appendChild(roleContent);
-            box.appendChild(jamSign);
-            box.appendChild(jamNotes);
-            box.onmouseenter = function () {
-              if (box.classList.length > 1) {
-                //增加延迟事件
-                timer = setTimeout(function () {
-                  box.children[0].style.display = "flex";
-                }, 1000);
-              }
-              if (box.jammed) {
-                //[干扰者]
-                timer = setTimeout(function () {
-                  box.children[2].style.display = "flex";
-                }, 1000);
-              }
+            var signDiv = `<div id='sign-${i}-${j}' style='display:flex;align-items:center;justify-content:center;'></div>`;
+            box.innerHTML += signDiv;
+            //悬浮框
+            // {
+            //   var notesName = notes[roleid];
+            //   let roleContent = document
+            //     .getElementById(notesName)
+            //     .cloneNode(true);
+            //   roleContent.setAttribute("id", `${notesName}-${i}-${j}`);
+            //   box.appendChild(roleContent);
+            // }
+            //干扰标志
+            // {
+            //   let jamSign = document.getElementById("jam-sign").cloneNode(true);
+            //   box.appendChild(jamSign);
+            // }
+            // //干扰说明
+            // {
+            //   let jamNotes = document
+            //     .getElementById("jam-notes")
+            //     .cloneNode(true);
+            //   box.appendChild(jamNotes);
+            // }
+          }
+          //信息展示事件
+          {
+            box.onmouseenter = () => {
+              this.refreshInfos(box);
             };
-            box.onmouseleave = function () {
-              box.children[0].style.display = "none";
-              box.children[2].style.display = "none";
-              clearTimeout(timer);
+            box.onmouseleave = () => {
+              this.clearInfo();
             };
           }
           row.appendChild(box);
@@ -126,12 +181,14 @@ var app = new Vue({
         }
 
         board.appendChild(row);
+        // board.innerHTML += "<span class='rowspan'></span>";
         this.boxArray.push(boxRow);
       }
     },
   },
   mounted: function () {
     this.initDeck();
+    this.drawBoard();
     this.initBoard();
   },
 });

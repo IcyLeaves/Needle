@@ -1,6 +1,6 @@
-function targetOnClick(e, context) {
+function targetOnClick(e, context, i, j) {
   e.srcElement.classList.add("target");
-  e.srcElement.onclick = null;
+  context.boxArray[i][j].infos["target"] = true;
 
   for (var i = 0; i < context.boxArray.length; i++) {
     for (var j = 0; j < context.boxArray[i].length; j++) {

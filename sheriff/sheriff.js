@@ -1,7 +1,7 @@
 var d = [-1, 0, 1];
 function sheriffOnClick(e, context, i, j) {
   e.srcElement.classList.add("sheriff");
-  e.srcElement.onclick = null;
+  context.boxArray[i][j].infos["sheriff"] = true;
 
   var init = 8;
   var M = context.boxArray.length;

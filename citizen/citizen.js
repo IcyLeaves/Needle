@@ -1,6 +1,6 @@
-function citizenOnClick(e, context) {
+function citizenOnClick(e, context, i, j) {
   e.srcElement.classList.add("citizen");
-  e.srcElement.onclick = null;
+  context.boxArray[i][j].infos["citizen"] = true;
 
   context.isLastDark = false; //[疯子]
 }

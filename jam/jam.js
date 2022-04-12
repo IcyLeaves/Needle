@@ -1,6 +1,7 @@
 function jamOnClick(e, context, i, j) {
   e.srcElement.classList.add("jam");
-  e.srcElement.onclick = null;
+  context.boxArray[i][j].infos["jam"] = true;
+
   // let i = e.srcElement.getAttribute("data-i");
   // let j = e.srcElement.getAttribute("data-j");
   context.boxArray[i][j].jamUnshow = false;

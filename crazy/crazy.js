@@ -1,6 +1,6 @@
-function crazyOnClick(e, context) {
+function crazyOnClick(e, context, i, j) {
   e.srcElement.classList.add("crazy");
-  e.srcElement.onclick = null;
+  context.boxArray[i][j].infos["crazy"] = true;
 
   if (context.isLastDark == true) {
     context.chances = 0;

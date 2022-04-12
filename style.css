@@ -1,11 +1,13 @@
 h1 {
   text-align: center;
   margin-bottom: 100px;
+  width: 100%;
 }
 #game-board {
   display: flex;
   align-items: center;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 #chances {
   display: flex;
@@ -15,13 +17,29 @@ h1 {
 #chances span {
   margin-left: 10px;
 }
+#app {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+#left-side {
+  width: 33vw;
+  padding: 0 1vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rowspan {
+  margin-right: 20px;
+}
 .notes {
   position: relative;
   z-index: 101;
   background-color: white;
   white-space: nowrap;
-  top: -4.5rem;
-  display: none;
+  display: flex;
   box-shadow: 0px 0px 10px rgb(94, 94, 94);
   border-radius: 5px;
 
@@ -51,7 +69,12 @@ h1 {
   align-items: center;
   position: relative;
 }
-
+.letter-box span {
+  pointer-events: none;
+}
+.letter-box div {
+  pointer-events: none;
+}
 .filled-box {
   border: 2px solid black;
 }

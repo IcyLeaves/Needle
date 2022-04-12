@@ -1,6 +1,6 @@
-function detectiveOnClick(e, context) {
+function detectiveOnClick(e, context, i, j) {
   e.srcElement.classList.add("detective");
-  e.srcElement.onclick = null;
+  context.boxArray[i][j].infos["detective"] = true;
 
   context.chances += 2;
 
