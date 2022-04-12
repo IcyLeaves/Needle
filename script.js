@@ -5,7 +5,7 @@ import { detectiveOnClick } from "./detective/detective.js";
 import { jamOnClick, jamCheck } from "./jam/jam.js";
 import { crazyOnClick } from "./crazy/crazy.js";
 import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
-import { killerOnClick } from "./killer/killer.js";
+import { killerOnClick, killerCountDown } from "./killer/killer.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
@@ -39,6 +39,9 @@ var app = new Vue({
     decks: [],
     boxArray: [],
     isLastDark: false,
+    killers: [],
+    killerSigns: ["", "1️⃣", "2️⃣", "3️⃣"],
+    currKillerTimer: 2,
   },
   methods: {
     clearInfo() {
@@ -48,6 +51,7 @@ var app = new Vue({
     addInfo(key) {
       var roleDiv = document.getElementById(key).cloneNode(true);
       roleDiv.setAttribute("id", `${key}-clone`);
+
       var infos = document.getElementById("infos");
       infos.appendChild(roleDiv);
     },
@@ -85,7 +89,7 @@ var app = new Vue({
       let board = document.getElementById("game-board");
       board.setAttribute(
         "style",
-        `width:calc(${COLS} * 3rem + ${COLS} * 4px);`
+        `width:calc(${COLS} * 3rem + ${COLS} * 8px);`
       );
     },
     drawOne() {
@@ -103,6 +107,8 @@ var app = new Vue({
         let boxRow = [];
         for (let j = 0; j < COLS; j++) {
           let box = document.createElement("div");
+          box.i = i;
+          box.j = j;
           box.infos = {};
           box.signs = {};
           box.className = "letter-box";
@@ -121,21 +127,22 @@ var app = new Vue({
               //减少一次猜测次数
               if (!box.shown && this.chances > 0) {
                 this.chances--;
+                killerCountDown(app, this.refreshSigns); //[杀手]
                 //[干扰者]
-                if (!that[i][j].signs["jammed"] && jamCheck(e, that, i, j)) {
+                if (!that[i][j].signs["jammed"] && jamCheck(app, box)) {
                   that[i][j].signs["jammed"] = true;
                   that[i][j].infos["jam-notes"] = true;
-                  this.refreshSigns(i, j);
                   this.isLastDark = false;
-                  return;
+                } else {
+                  delete that[i][j].signs["jammed"];
+                  delete that[i][j].infos["jam-notes"];
+                  //[警长]
+                  sheriffCheck(app, box);
+                  //开始执行效果
+                  randomPeople[roleid](e, app, i, j);
+                  box.shown = true;
                 }
-                delete that[i][j].signs["jammed"];
-                delete that[i][j].infos["jam-notes"];
-                //[警长]
-                sheriffCheck(app, i, j);
-                //开始执行效果
-                randomPeople[roleid](e, app, i, j);
-                box.shown = true;
+
                 this.refreshInfos(box);
                 this.refreshSigns(i, j);
               }
@@ -170,6 +177,7 @@ var app = new Vue({
           //信息展示事件
           {
             box.onmouseenter = () => {
+              this.currKillerTimer = box.killerTimer;
               this.refreshInfos(box);
             };
             box.onmouseleave = () => {
@@ -181,7 +189,6 @@ var app = new Vue({
         }
 
         board.appendChild(row);
-        // board.innerHTML += "<span class='rowspan'></span>";
         this.boxArray.push(boxRow);
       }
     },

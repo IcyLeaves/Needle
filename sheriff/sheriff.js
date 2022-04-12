@@ -25,9 +25,14 @@ function sheriffOnClick(e, context, i, j) {
 
   context.isLastDark = false; //[疯子]
 }
-function sheriffCheck(context, i, j) {
+function sheriffCheck(context, curr) {
   var M = context.boxArray.length;
   var N = context.boxArray[0].length;
+  let { i, j } = {
+    i: curr.i,
+    j: curr.j,
+  };
+
   for (var x = 0; x < 3; x++) {
     for (var y = 0; y < 3; y++) {
       if (x == 1 && y == 1) continue;

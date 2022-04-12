@@ -17,20 +17,24 @@
   </head>
   <body>
     <div id="app">
-      <div style="width: 100vw"><h1>Needle v1.4</h1></div>
+      <div style="width: 100vw"><h1>Needle v1.5</h1></div>
 
       <div style="width: 100vw; display: flex">
         <div id="left-side">
           <b style="margin: 0 0 20px 0; font-size: 20px">说明</b>
           <div id="infos"></div>
         </div>
-        <div id="game-board"></div>
+        <div
+          style="display: flex; flex-direction: column; justify-content: center"
+        >
+          <div id="game-board"></div>
+          <div id="chances">
+            <span><image src="./chances.png"></image></span>
+            <span> × {{chances}}</span>
+          </div>
+        </div>
       </div>
 
-      <div id="chances">
-        <span><image src="./chances.png"></image></span>
-        <span> × {{chances}}</span>
-      </div>
       <!-- 所有职业悬浮框说明 UPDATE HERE-->
       <div id="roles" style="display: none">
         <div id="target" class="notes">
@@ -104,13 +108,42 @@
           <div class="notes-right">
             <div style="color: #e06c60" class="notes-title">杀手</div>
             <div class="notes-content">
-              现身后，你的后三次调查如果使目标现身，反而输掉游dfs戏
+              现身后，你的后三次调查如果使目标现身，反而输掉游戏
             </div>
+          </div>
+        </div>
+        <div v-for="(item,i) in killerSigns" :key="i">
+          <div v-bind:id="'killer-notes'+i" class="notes bad">
+            <div class="letter-box">{{item}}</div>
+            <div class="notes-right">
+              <div style="color: #e06c60" class="notes-title">
+                <i>杀手正在寻找目标</i>
+              </div>
+              <div class="notes-content">
+                后{{i}}次调查尽量不要使目标现身，否则目标会被干掉！
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="killed-notes" class="notes bad">
+          <div class="letter-box">💀</div>
+          <div class="notes-right">
+            <div style="color: #e06c60" class="notes-title">
+              <i>目标死了，任务失败</i>
+            </div>
+            <div class="notes-content">很遗憾，你帮杀手找到了目标...</div>
           </div>
         </div>
       </div>
       <!-- 所有职业小标志 UPDATE HERE -->
-      <div id="signs" style="display: none"><span id="jammed">❓</span></div>
+      <div id="signs" style="display: none">
+        <span id="jammed" class="sign">❓</span>
+        <span id="killing3" class="sign">3️⃣</span>
+        <span id="killing2" class="sign">2️⃣</span>
+        <span id="killing1" class="sign">1️⃣</span>
+        <span id="killing0" class="sign"></span>
+        <span id="killed" class="sign">💀</span>
+      </div>
     </div>
 
     <script src="jquery.min.js"></script>

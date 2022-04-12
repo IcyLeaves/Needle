@@ -8,9 +8,12 @@ function jamOnClick(e, context, i, j) {
 
   context.isLastDark = true; //[疯子]
 }
-function jamCheck(e, boxArray, i, j) {
+function jamCheck(context, curr) {
+  let boxArray = context.boxArray;
   let M = boxArray.length;
   let N = boxArray[0].length;
+  let i = curr.i;
+  let j = curr.j;
   if (i > 0 && boxArray[i - 1][j].jamUnshow) return true;
   if (i < M - 1 && boxArray[i + 1][j].jamUnshow) return true;
   if (j > 0 && boxArray[i][j - 1].jamUnshow) return true;

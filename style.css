@@ -44,9 +44,9 @@ h1 {
   border-radius: 5px;
 
   padding: 10px 20px;
-
-  justify-content: center;
+  max-width: 30vw;
   align-items: center;
+  margin-bottom: 20px;
 }
 .bad {
   background-color: rgb(30, 30, 30);
