@@ -77,6 +77,15 @@ h1 {
 .letter-box div {
   pointer-events: none;
 }
+.over {
+  opacity: 0.3;
+}
+.win {
+  color: green;
+}
+.lose {
+  color: crimson;
+}
 .filled-box {
   border: 2px solid black;
 }

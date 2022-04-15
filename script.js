@@ -7,10 +7,11 @@ import { crazyOnClick } from "./crazy/crazy.js";
 import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
 import { killerOnClick, killerCountDown } from "./killer/killer.js";
 import { augurOnClick, augurInit } from "./augur/augur.js";
+import { volunteerOnClick, volunteerCheck } from "./volunteer/volunteer.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 31, 15, 5, 3, 3, 3, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 28, 15, 5, 3, 3, 3, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -20,6 +21,7 @@ let randomPeople = [
   sheriffOnClick,
   killerOnClick,
   augurOnClick,
+  volunteerOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -30,6 +32,7 @@ let notes = [
   "sheriff",
   "killer",
   "augur",
+  "volunteer",
 ]; //UPDATE HERE
 let swap = (arr, i, j) => {
   [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -41,8 +44,7 @@ var app = new Vue({
     infos: [],
     decks: [],
     boxArray: [],
-    SUNS: [0, 1, 2, 5, 7],
-    MOONS: [3, 4, 6],
+    isGameOver: -1,
     //[疯子]
     isLastDark: false,
     //[杀手]
@@ -51,8 +53,26 @@ var app = new Vue({
     currKillerTimer: 2,
     //[占卜师]
     augurDecks: [],
+    SUNS: [0, 1, 2, 5, 7, 8], //UPDATE HERE
+    MOONS: [3, 4, 6], //UPDATE HERE
   },
   methods: {
+    gameover() {
+      this.renderOverBoard();
+    },
+    renderOverBoard() {
+      for (var i = 0; i < ROWS; i++) {
+        for (var j = 0; j < COLS; j++) {
+          if (!this.boxArray[i][j].shown) {
+            var box =
+              document.getElementById("game-board").children[i].children[j];
+            box.classList.add(notes[this.boxArray[i][j].roleid]);
+            box.classList.add("over");
+          }
+        }
+      }
+    },
+
     clearInfo() {
       var infos = document.getElementById("infos");
       infos.innerHTML = "";
@@ -127,9 +147,6 @@ var app = new Vue({
           let roleid = this.drawOne();
           box.roleid = roleid;
           if (roleid != 1) console.log(notes[roleid], i, j);
-          if (roleid == 3) {
-            box.jamUnshow = true;
-          }
           // 点击事件
           {
             var that = this.boxArray;
@@ -151,10 +168,16 @@ var app = new Vue({
                   //开始执行效果
                   randomPeople[roleid](e, app, i, j);
                   box.shown = true;
+                  //[志愿者]
+                  volunteerCheck(app, box);
                 }
 
                 this.refreshInfos(box);
                 this.refreshSigns(i, j);
+              }
+              if (this.chances == 0) this.isGameOver = 0;
+              if (this.isGameOver != -1) {
+                this.gameover();
               }
             };
           }

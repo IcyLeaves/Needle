@@ -15,10 +15,16 @@
     <link rel="stylesheet" href="sheriff/sheriff.css" />
     <link rel="stylesheet" href="killer/killer.css" />
     <link rel="stylesheet" href="augur/augur.css" />
+    <link rel="stylesheet" href="volunteer/volunteer.css" />
   </head>
   <body>
     <div id="app">
-      <div style="width: 100vw"><h1>Needle v1.6</h1></div>
+      <div
+        style="width: 100vw"
+        :class="[isGameOver==0? 'lose' : '',isGameOver==1? 'win' : '']"
+      >
+        <h1>Needle v1.7</h1>
+      </div>
 
       <div style="width: 100vw; display: flex">
         <div id="left-side">
@@ -163,6 +169,17 @@
             </div>
             <div class="notes-content">
               占卜师说他是黑暗势力，不过如果占卜后人物悄悄发生过移动就说不准了
+            </div>
+          </div>
+        </div>
+        <div id="volunteer" class="notes">
+          <div class="letter-box volunteer"></div>
+          <div class="notes-right">
+            <div style="color: #fbc02d" class="notes-title">志愿者</div>
+            <div class="notes-content">
+              每当你在相邻的格子上失去最后一个<span
+                ><image src="./chances.png"></image></span
+              >，<span><image src="./chances.png"></image></span> + 2
             </div>
           </div>
         </div>

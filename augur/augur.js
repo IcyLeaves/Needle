@@ -18,12 +18,14 @@ function augurOnClick(e, context, i, j) {
         arr.splice(index, 1);
       }
     };
-    remove(context.augurDecks, `${x - 1}-${y}`);
-    remove(context.augurDecks, `${x + 1}-${y}`);
-    remove(context.augurDecks, `${x}-${y - 1}`);
-    remove(context.augurDecks, `${x}-${y + 1}`);
-    for (var dx = 0; dx < 2; dx++) {
-      for (var dy = 0; dy < 2; dy++) {
+    for (var dx = -1; dx <= 1; dx++) {
+      for (var dy = -1; dy <= 1; dy++) {
+        remove(context.augurDecks, `${x + dx}-${y + dy}`);
+      }
+    }
+    for (var dx = 0; dx <= 1; dx++) {
+      for (var dy = 0; dy <= 1; dy++) {
+        remove(context.augurDecks, `${x + dx}-${y + dy}`);
         if (
           context.SUNS.indexOf(context.boxArray[x + dx][y + dy].roleid) > -1
         ) {
