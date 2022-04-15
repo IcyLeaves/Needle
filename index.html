@@ -14,10 +14,11 @@
     <link rel="stylesheet" href="crazy/crazy.css" />
     <link rel="stylesheet" href="sheriff/sheriff.css" />
     <link rel="stylesheet" href="killer/killer.css" />
+    <link rel="stylesheet" href="augur/augur.css" />
   </head>
   <body>
     <div id="app">
-      <div style="width: 100vw"><h1>Needle v1.5</h1></div>
+      <div style="width: 100vw"><h1>Needle v1.6</h1></div>
 
       <div style="width: 100vw; display: flex">
         <div id="left-side">
@@ -134,6 +135,37 @@
             <div class="notes-content">很遗憾，你帮杀手找到了目标...</div>
           </div>
         </div>
+        <div id="augur" class="notes">
+          <div class="letter-box augur"></div>
+          <div class="notes-right">
+            <div style="color: #303f9f" class="notes-title">占卜师</div>
+            <div class="notes-content">
+              现身时，随机占卜一个2x2的区域，得知每个人的势力
+            </div>
+          </div>
+        </div>
+        <div id="augur-sun-notes" class="notes">
+          <div class="letter-box">☀️</div>
+          <div class="notes-right">
+            <div style="color: #303f9f" class="notes-title">
+              <i>灵光乍现</i>
+            </div>
+            <div class="notes-content">
+              占卜师说他是光明势力，不过如果占卜后人物悄悄发生过移动就说不准了
+            </div>
+          </div>
+        </div>
+        <div id="augur-moon-notes" class="notes">
+          <div class="letter-box">🌑</div>
+          <div class="notes-right">
+            <div style="color: #303f9f" class="notes-title">
+              <i>暗流涌动</i>
+            </div>
+            <div class="notes-content">
+              占卜师说他是黑暗势力，不过如果占卜后人物悄悄发生过移动就说不准了
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 所有职业小标志 UPDATE HERE -->
       <div id="signs" style="display: none">
@@ -143,6 +175,8 @@
         <span id="killing1" class="sign">1️⃣</span>
         <span id="killing0" class="sign"></span>
         <span id="killed" class="sign">💀</span>
+        <span id="augur-sun-signs" class="sign">☀️</span>
+        <span id="augur-moon-signs" class="sign">🌑</span>
       </div>
     </div>
 

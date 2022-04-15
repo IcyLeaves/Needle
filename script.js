@@ -6,10 +6,11 @@ import { jamOnClick, jamCheck } from "./jam/jam.js";
 import { crazyOnClick } from "./crazy/crazy.js";
 import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
 import { killerOnClick, killerCountDown } from "./killer/killer.js";
+import { augurOnClick, augurInit } from "./augur/augur.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 34, 15, 5, 3, 3, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 31, 15, 5, 3, 3, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -18,6 +19,7 @@ let randomPeople = [
   crazyOnClick,
   sheriffOnClick,
   killerOnClick,
+  augurOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -27,6 +29,7 @@ let notes = [
   "crazy",
   "sheriff",
   "killer",
+  "augur",
 ]; //UPDATE HERE
 let swap = (arr, i, j) => {
   [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -38,10 +41,16 @@ var app = new Vue({
     infos: [],
     decks: [],
     boxArray: [],
+    SUNS: [0, 1, 2, 5, 7],
+    MOONS: [3, 4, 6],
+    //[疯子]
     isLastDark: false,
+    //[杀手]
     killers: [],
     killerSigns: ["", "1️⃣", "2️⃣", "3️⃣"],
     currKillerTimer: 2,
+    //[占卜师]
+    augurDecks: [],
   },
   methods: {
     clearInfo() {
@@ -116,6 +125,7 @@ var app = new Vue({
           // box.setAttribute("data-j", j);
           //决定格子的职业
           let roleid = this.drawOne();
+          box.roleid = roleid;
           if (roleid != 1) console.log(notes[roleid], i, j);
           if (roleid == 3) {
             box.jamUnshow = true;
@@ -197,5 +207,7 @@ var app = new Vue({
     this.initDeck();
     this.drawBoard();
     this.initBoard();
+
+    this.augurDecks = augurInit(ROWS, COLS);
   },
 });
