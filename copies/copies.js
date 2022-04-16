@@ -2,6 +2,10 @@ import * as COMMON from "../_common/common.js";
 function copiesOnClick(e, context, i, j) {
   e.srcElement.classList.add("copies");
   context.boxArray[i][j].infos["copies"] = true;
+  context.copiesTeam.splice(
+    context.copiesTeam.indexOf(COMMON.setPair(i, j)),
+    1
+  );
 
   context.isLastDark = true; //[疯子]
 }
