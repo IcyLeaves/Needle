@@ -1,4 +1,12 @@
+import * as COMMON from "../_common/common.js";
+import { copiesCheck } from "../copies/copies.js";
 function targetOnClick(e, context, i, j) {
+  //[替身]
+  if (copiesCheck(context, i, j)) {
+    context.boxArray[i][j].onclick(e, context, i, j);
+    return;
+  }
+
   e.srcElement.classList.add("target");
   context.boxArray[i][j].infos["target"] = true;
 

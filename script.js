@@ -9,10 +9,11 @@ import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
 import { killerOnClick, killerCountDown } from "./killer/killer.js";
 import { augurOnClick, augurInit } from "./augur/augur.js";
 import { volunteerOnClick, volunteerCheck } from "./volunteer/volunteer.js";
+import { copiesOnClick } from "./copies/copies.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 28, 15, 5, 3, 3, 3, 3, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 26, 15, 5, 3, 3, 3, 3, 3, 2]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -23,6 +24,7 @@ let randomPeople = [
   killerOnClick,
   augurOnClick,
   volunteerOnClick,
+  copiesOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -34,6 +36,7 @@ let notes = [
   "killer",
   "augur",
   "volunteer",
+  "copies",
 ]; //UPDATE HERE
 var app = new Vue({
   el: "#app",
@@ -52,9 +55,9 @@ var app = new Vue({
     //[占卜师]
     augurDecks: [],
     SUNS: [0, 1, 2, 5, 7, 8], //UPDATE HERE
-    MOONS: [3, 4, 6], //UPDATE HERE
+    MOONS: [3, 4, 6, 9], //UPDATE HERE
     //[替身]
-    copiesArrow: ["➡️", "↘️", "⬇️", "↙️", "⬅️", "↖️", "⬆️", "↗️"],
+    copiesArrow: ["↖️", "⬆️", "↗️", "⬅️", "", "➡️", "↙️", "⬇️", "↘️"],
     copiesTeam: [],
     copiesCurr: undefined,
   },
@@ -142,35 +145,40 @@ var app = new Vue({
           //决定格子的职业
           let roleid = COMMON.withdraw(this.decks);
           box.roleid = roleid;
-          if (roleid != 1) console.log(notes[roleid], i, j);
+          if (roleid != 1) {
+            if (roleid == 0) console.warn(notes[roleid], i, j);
+            else console.log(notes[roleid], i, j);
+          }
 
-          if (roleid == 9) this.copiesTeam.push;
+          if (roleid == 9) this.copiesTeam.push(COMMON.setPair(i, j));
           // 点击事件
           {
             var that = this.boxArray;
-            box.onclick = (e) => {
+            box.onclick = (e, context, ii, jj) => {
+              if (!ii) ii = e.currentTarget.i;
+              if (!jj) jj = e.currentTarget.j;
               //减少一次猜测次数
-              if (!box.shown && this.chances > 0) {
+              if (!this.boxArray[ii][jj].shown && this.chances > 0) {
                 this.chances--;
                 killerCountDown(app, this.refreshSigns); //[杀手]
                 //[干扰者]
-                if (!that[i][j].signs["jammed"] && jamCheck(app, box)) {
-                  that[i][j].signs["jammed"] = true;
-                  that[i][j].infos["jam-notes"] = true;
+                if (!that[ii][jj].signs["jammed"] && jamCheck(app, box)) {
+                  that[ii][jj].signs["jammed"] = true;
+                  that[ii][jj].infos["jam-notes"] = true;
                   this.isLastDark = false;
                 } else {
-                  delete that[i][j].signs["jammed"];
-                  delete that[i][j].infos["jam-notes"];
+                  delete that[ii][jj].signs["jammed"];
+                  delete that[ii][jj].infos["jam-notes"];
                   //[警长]
                   sheriffCheck(app, box);
                   //开始执行效果
-                  randomPeople[roleid](e, app, i, j);
-                  box.shown = true;
+                  randomPeople[roleid](e, app, ii, jj);
+                  this.boxArray[ii][jj].shown = true;
                 }
                 //[志愿者]
                 volunteerCheck(app, box);
                 this.refreshInfos(box);
-                this.refreshSigns(i, j);
+                this.refreshSigns(ii, jj);
               }
               if (this.chances == 0) this.isGameOver = 0;
               if (this.isGameOver != -1) {
@@ -231,3 +239,4 @@ var app = new Vue({
     this.augurDecks = augurInit(ROWS, COLS);
   },
 });
+window.vue = app;

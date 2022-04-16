@@ -24,7 +24,7 @@
         style="width: 100vw"
         :class="[isGameOver==0? 'lose' : '',isGameOver==1? 'win' : '']"
       >
-        <h1>Needle v1.7</h1>
+        <h1>Needle v2.0</h1>
       </div>
 
       <div style="width: 100vw; display: flex">
@@ -181,6 +181,31 @@
               每当你在相邻的格子上失去最后一个<span
                 ><image src="./chances.png"></image></span
               >，<span><image src="./chances.png"></image></span> + 2
+            </div>
+          </div>
+        </div>
+        <div id="copies" class="notes bad">
+          <div class="letter-box copies"></div>
+          <div class="notes-right">
+            <div style="color: #80cbc4" class="notes-title">替身</div>
+            <div class="notes-content">
+              目标将要现身时，会和目标交换位置并代替他现身。如果是这样，标出目标的方位
+            </div>
+          </div>
+        </div>
+        <div
+          v-for="(item,i) in copiesArrow"
+          :key="item"
+          v-bind:id="'copies-notes-'+i"
+          class="notes bad"
+        >
+          <div class="letter-box">{{item}}</div>
+          <div class="notes-right">
+            <div style="color: #80cbc4" class="notes-title">
+              <i>这次又让他逃了</i>
+            </div>
+            <div class="notes-content">
+              替身保护了目标不被发现，但同样暴露了重要的线索！
             </div>
           </div>
         </div>

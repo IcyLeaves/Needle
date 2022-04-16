@@ -51,6 +51,7 @@ function setPair(x, y) {
   return `${x}-${y}`;
 }
 function getPair(str) {
+  if (!str) return [undefined, undefined];
   var [xstr, ystr] = str.split("-");
   return [parseInt(xstr), parseInt(ystr)];
 }
