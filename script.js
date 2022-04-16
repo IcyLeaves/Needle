@@ -1,3 +1,4 @@
+import * as COMMON from "./_common/common.js";
 //UPDATE HERE
 import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
@@ -34,9 +35,6 @@ let notes = [
   "augur",
   "volunteer",
 ]; //UPDATE HERE
-let swap = (arr, i, j) => {
-  [arr[i], arr[j]] = [arr[j], arr[i]];
-};
 var app = new Vue({
   el: "#app",
   data: {
@@ -55,6 +53,10 @@ var app = new Vue({
     augurDecks: [],
     SUNS: [0, 1, 2, 5, 7, 8], //UPDATE HERE
     MOONS: [3, 4, 6], //UPDATE HERE
+    //[替身]
+    copiesArrow: ["➡️", "↘️", "⬇️", "↙️", "⬅️", "↖️", "⬆️", "↗️"],
+    copiesTeam: [],
+    copiesCurr: undefined,
   },
   methods: {
     gameover() {
@@ -121,12 +123,6 @@ var app = new Vue({
         `width:calc(${COLS} * 3rem + ${COLS} * 8px);`
       );
     },
-    drawOne() {
-      var n = this.decks.length;
-      var i = Math.floor(Math.random() * this.decks.length);
-      swap(this.decks, i, n - 1);
-      return this.decks.pop();
-    },
     initBoard() {
       let board = document.getElementById("game-board");
 
@@ -144,9 +140,11 @@ var app = new Vue({
           // box.setAttribute("data-i", i);
           // box.setAttribute("data-j", j);
           //决定格子的职业
-          let roleid = this.drawOne();
+          let roleid = COMMON.withdraw(this.decks);
           box.roleid = roleid;
           if (roleid != 1) console.log(notes[roleid], i, j);
+
+          if (roleid == 9) this.copiesTeam.push;
           // 点击事件
           {
             var that = this.boxArray;
@@ -168,10 +166,9 @@ var app = new Vue({
                   //开始执行效果
                   randomPeople[roleid](e, app, i, j);
                   box.shown = true;
-                  //[志愿者]
-                  volunteerCheck(app, box);
                 }
-
+                //[志愿者]
+                volunteerCheck(app, box);
                 this.refreshInfos(box);
                 this.refreshSigns(i, j);
               }

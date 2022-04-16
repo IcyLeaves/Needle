@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="killer/killer.css" />
     <link rel="stylesheet" href="augur/augur.css" />
     <link rel="stylesheet" href="volunteer/volunteer.css" />
+    <link rel="stylesheet" href="copies/copies.css" />
   </head>
   <body>
     <div id="app">
@@ -194,6 +195,13 @@
         <span id="killed" class="sign">💀</span>
         <span id="augur-sun-signs" class="sign">☀️</span>
         <span id="augur-moon-signs" class="sign">🌑</span>
+        <span
+          v-for="(item,i) in copiesArrow"
+          :key="item"
+          v-bind:id="'copies-signs-'+i"
+        >
+          {{item}}
+        </span>
       </div>
     </div>
 

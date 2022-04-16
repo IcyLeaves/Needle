@@ -9,7 +9,6 @@ function targetOnClick(e, context, i, j) {
   }
   context.isGameOver = 1;
   if (context.killers.length > 0) {
-    console.log(context.killers);
     context.boxArray[i][j].signs["killed"] = true;
     context.boxArray[i][j].infos["killed-notes"] = true;
 

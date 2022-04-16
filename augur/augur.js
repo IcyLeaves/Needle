@@ -1,6 +1,4 @@
-let swap = (arr, i, j) => {
-  [arr[i], arr[j]] = [arr[j], arr[i]];
-};
+import * as COMMON from "../_common/common.js";
 function augurOnClick(e, context, i, j) {
   e.srcElement.classList.add("augur");
   context.boxArray[i][j].infos["augur"] = true;
@@ -8,10 +6,8 @@ function augurOnClick(e, context, i, j) {
   if (context.augurDecks.length > 0) {
     var i = Math.floor(Math.random() * context.augurDecks.length);
     var n = context.augurDecks.length;
-    swap(context.augurDecks, i, n - 1);
-    var xyPair = context.augurDecks.pop().split("-");
-    var x = parseInt(xyPair[0]),
-      y = parseInt(xyPair[1]);
+    COMMON.swap(context.augurDecks, i, n - 1);
+    var [x, y] = COMMON.getPair(context.augurDecks.pop());
     var remove = function (arr, val) {
       var index = arr.indexOf(val);
       if (index > -1) {
@@ -20,23 +16,23 @@ function augurOnClick(e, context, i, j) {
     };
     for (var dx = -1; dx <= 1; dx++) {
       for (var dy = -1; dy <= 1; dy++) {
-        remove(context.augurDecks, `${x + dx}-${y + dy}`);
+        remove(context.augurDecks, COMMON.setPair(x + dx, y + dy));
       }
     }
     for (var dx = 0; dx <= 1; dx++) {
       for (var dy = 0; dy <= 1; dy++) {
-        remove(context.augurDecks, `${x + dx}-${y + dy}`);
-        if (
-          context.SUNS.indexOf(context.boxArray[x + dx][y + dy].roleid) > -1
-        ) {
-          context.boxArray[x + dx][y + dy].infos["augur-sun-notes"] = true;
-          context.boxArray[x + dx][y + dy].signs["augur-sun-signs"] = true;
+        var nx = x + dx;
+        var ny = y + dy;
+        remove(context.augurDecks, COMMON.setPair(nx, ny));
+        if (context.SUNS.indexOf(context.boxArray[nx][ny].roleid) > -1) {
+          context.boxArray[nx][ny].infos["augur-sun-notes"] = true;
+          context.boxArray[nx][ny].signs["augur-sun-signs"] = true;
         } else {
-          context.boxArray[x + dx][y + dy].infos["augur-moon-notes"] = true;
-          context.boxArray[x + dx][y + dy].signs["augur-moon-signs"] = true;
+          context.boxArray[nx][ny].infos["augur-moon-notes"] = true;
+          context.boxArray[nx][ny].signs["augur-moon-signs"] = true;
         }
-        context.refreshSigns(x + dx, y + dy);
-        context.refreshInfos(x + dx, y + dy);
+        context.refreshSigns(nx, ny);
+        context.refreshInfos(nx, ny);
       }
     }
   }
@@ -48,7 +44,7 @@ function augurInit(m, n) {
   var res = [];
   for (var i = 0; i < m - 1; i++) {
     for (var j = 0; j < n - 1; j++) {
-      res.push(`${i}-${j}`);
+      res.push(COMMON.setPair(i, j));
     }
   }
   return res;
