@@ -159,10 +159,16 @@ var app = new Vue({
               if (!jj) jj = e.currentTarget.j;
               //减少一次猜测次数
               if (!this.boxArray[ii][jj].shown && this.chances > 0) {
+                //[志愿者]
+                volunteerCheck(app, this.boxArray[ii][jj]);
                 this.chances--;
+
                 killerCountDown(app, this.refreshSigns); //[杀手]
                 //[干扰者]
-                if (!that[ii][jj].signs["jammed"] && jamCheck(app, box)) {
+                if (
+                  !that[ii][jj].signs["jammed"] &&
+                  jamCheck(app, this.boxArray[ii][jj])
+                ) {
                   that[ii][jj].signs["jammed"] = true;
                   that[ii][jj].infos["jam-notes"] = true;
                   this.isLastDark = false;
@@ -170,14 +176,12 @@ var app = new Vue({
                   delete that[ii][jj].signs["jammed"];
                   delete that[ii][jj].infos["jam-notes"];
                   //[警长]
-                  sheriffCheck(app, box);
+                  sheriffCheck(app, this.boxArray[ii][jj]);
                   //开始执行效果
                   randomPeople[roleid](e, app, ii, jj);
                   this.boxArray[ii][jj].shown = true;
                 }
-                //[志愿者]
-                volunteerCheck(app, box);
-                this.refreshInfos(box);
+                this.refreshInfos(this.boxArray[ii][jj]);
                 this.refreshSigns(ii, jj);
               }
               if (this.chances == 0) this.isGameOver = 0;

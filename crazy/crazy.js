@@ -3,7 +3,7 @@ function crazyOnClick(e, context, i, j) {
   context.boxArray[i][j].infos["crazy"] = true;
 
   if (context.isLastDark == true) {
-    context.chances = 0;
+    context.chances = 1;
   }
 
   context.isLastDark = true; //[疯子]
