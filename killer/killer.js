@@ -10,7 +10,7 @@ function killerOnClick(e, context, i, j) {
 
   context.isLastDark = true; //[疯子]
 }
-function killerCountDown(context, refreshFunc) {
+function killerCountDown(context) {
   for (var idx = 0; idx < context.killers.length; ) {
     let curr = context.killers[idx];
     delete curr.signs[`killing${curr.killerTimer}`];
@@ -21,7 +21,7 @@ function killerCountDown(context, refreshFunc) {
     } else {
       curr.signs[`killing${curr.killerTimer}`] = true;
       curr.infos[`killer-notes${curr.killerTimer}`] = true;
-      refreshFunc(curr.i, curr.j);
+      context.refreshSigns(curr);
       idx++;
     }
   }

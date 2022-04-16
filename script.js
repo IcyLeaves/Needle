@@ -95,19 +95,26 @@ var app = new Vue({
         this.addInfo(key);
       }
     },
-    deleteSign(i, j) {
-      var signDiv = document.getElementById(`sign-${i}-${j}`);
+    refreshAllSigns() {
+      for (var boxRow of this.boxArray) {
+        for (var box of boxRow) {
+          this.refreshSigns(box);
+        }
+      }
+    },
+    deleteSign(box) {
+      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
       signDiv.innerHTML = "";
     },
-    addSign(key, i, j) {
-      var signDiv = document.getElementById(`sign-${i}-${j}`);
+    addSign(key, box) {
+      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
       var sign = document.getElementById(key).cloneNode(true);
       signDiv.appendChild(sign);
     },
-    refreshSigns(i, j) {
-      this.deleteSign(i, j);
-      for (var key in this.boxArray[i][j].signs) {
-        this.addSign(key, i, j);
+    refreshSigns(box) {
+      this.deleteSign(box);
+      for (var key in box.signs) {
+        this.addSign(key, box);
       }
     },
     initDeck() {
@@ -163,7 +170,7 @@ var app = new Vue({
                 volunteerCheck(app, this.boxArray[ii][jj]);
                 this.chances--;
 
-                killerCountDown(app, this.refreshSigns); //[杀手]
+                killerCountDown(app); //[杀手]
                 //[干扰者]
                 if (
                   !that[ii][jj].signs["jammed"] &&
@@ -181,8 +188,8 @@ var app = new Vue({
                   randomPeople[roleid](e, app, ii, jj);
                   this.boxArray[ii][jj].shown = true;
                 }
-                this.refreshInfos(this.boxArray[ii][jj]);
-                this.refreshSigns(ii, jj);
+                this.refreshInfos(ii, jj);
+                this.refreshAllSigns();
               }
               if (this.chances == 0) this.isGameOver = 0;
               if (this.isGameOver != -1) {

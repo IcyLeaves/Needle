@@ -31,8 +31,6 @@ function augurOnClick(e, context, i, j) {
           context.boxArray[nx][ny].infos["augur-moon-notes"] = true;
           context.boxArray[nx][ny].signs["augur-moon-signs"] = true;
         }
-        context.refreshSigns(nx, ny);
-        context.refreshInfos(nx, ny);
       }
     }
   }
