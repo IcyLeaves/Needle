@@ -13,7 +13,7 @@ import { copiesOnClick } from "./copies/copies.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 26, 15, 5, 3, 3, 3, 3, 3, 2]; //UPDATE HERE
+const NUMCONFIG = [1, 24, 15, 5, 3, 5, 3, 3, 3, 2]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -242,8 +242,63 @@ var app = new Vue({
         this.boxArray.push(boxRow);
       }
     },
+    initRandom() {
+      // 创建一个URLSearchParams实例
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      // 把键值对列表转换为一个对象
+      const params = Object.fromEntries(urlSearchParams.entries());
+
+      if (!params && !params.seed) {
+        var chs = [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "i",
+          "j",
+          "k",
+          "l",
+          "m",
+          "n",
+          "o",
+          "p",
+          "q",
+          "r",
+          "s",
+          "t",
+          "u",
+          "v",
+          "w",
+          "x",
+          "y",
+          "z",
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+        ];
+        var serial = "";
+        for (var i = 0; i < 16; i++) {
+          serial += chs[Math.floor(Math.random() * chs.length)];
+        }
+        window.location.href = "/?seed=" + serial;
+      }
+      return params.seed;
+    },
   },
   mounted: function () {
+    var seed = this.initRandom();
+    Math.seedrandom(seed); //look http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
     this.initDeck();
     this.drawBoard();
     this.initBoard();
