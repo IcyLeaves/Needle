@@ -194,7 +194,8 @@ var app = new Vue({
                 this.refreshInfos(that[ii][jj]);
                 this.refreshAllSigns();
               }
-              if (this.chances == 0) this.isGameOver = 0;
+              if (this.isGameOver == -1 && this.chances == 0)
+                this.isGameOver = 0;
               if (this.isGameOver != -1) {
                 this.gameover();
               }
