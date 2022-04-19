@@ -41,6 +41,8 @@ let notes = [
 var app = new Vue({
   el: "#app",
   data: {
+    seed: 0,
+    customSeed: "",
     chances: 16,
     infos: [],
     decks: [],
@@ -249,56 +251,33 @@ var app = new Vue({
       const params = Object.fromEntries(urlSearchParams.entries());
 
       if (!params && !params.seed) {
-        var chs = [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "0",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-        ];
-        var serial = "";
-        for (var i = 0; i < 16; i++) {
-          serial += chs[Math.floor(Math.random() * chs.length)];
-        }
-        window.location.href = "/?seed=" + serial;
+        this.clickContest();
       }
       return params.seed;
     },
+    createRandomSeed() {
+      var res = "";
+      var chs = "qwertyuiopasdfghjklzxcvbnm1234567890";
+      for (var i = 0; i < 16; i++) {
+        res += chs[Math.floor(Math.random() * chs.length)];
+      }
+      return res;
+    },
+    clickPractice() {
+      window.location.href = "/?seed=" + this.createRandomSeed();
+    },
+    clickContest() {
+      var d = new Date();
+      var idx = Math.log(Math.floor(d.getTime() / (1000 * 60 * 5)));
+      window.location.href = "/?seed=" + idx;
+    },
+    submitSeed(e) {
+      window.location.href = "/?seed=" + this.customSeed;
+    },
   },
   mounted: function () {
-    var seed = this.initRandom();
-    Math.seedrandom(seed); //look http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
+    this.seed = this.initRandom();
+    Math.seedrandom(this.seed); //look http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
     this.initDeck();
     this.drawBoard();
     this.initBoard();

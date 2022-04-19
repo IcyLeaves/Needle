@@ -1,3 +1,23 @@
+.col-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.row-line {
+  border-bottom: gray 1px solid;
+}
+.el-row {
+  padding: 10px 0;
+}
+.big-title {
+  margin-bottom: 20px;
+  font-size: 40px;
+  font-weight: bold;
+}
 h1 {
   text-align: center;
   margin-bottom: 100px;

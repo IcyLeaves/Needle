@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Needle</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="random.js"></script>
+    <link rel="stylesheet" href="_library/css/element.css" />
+    <script src="_library/js/random.js"></script>
     <!-- 所有职业css UPDATE HERE-->
     <link rel="stylesheet" href="target/target.css" />
     <link rel="stylesheet" href="citizen/citizen.css" />
@@ -21,28 +22,87 @@
   </head>
   <body>
     <div id="app">
-      <div
-        style="width: 100vw"
-        :class="[isGameOver==0? 'lose' : '',isGameOver==1? 'win' : '']"
-      >
-        <h1>Needle v2.0</h1>
-      </div>
-
-      <div style="width: 100vw; display: flex">
-        <div id="left-side">
-          <b style="margin: 0 0 20px 0; font-size: 20px">说明</b>
-          <div id="infos"></div>
-        </div>
-        <div
-          style="display: flex; flex-direction: column; justify-content: center"
-        >
-          <div id="game-board"></div>
-          <div id="chances">
-            <span><image src="./chances.png"></image></span>
-            <span> × {{chances}}</span>
-          </div>
-        </div>
-      </div>
+      <el-container>
+        <el-main>
+          <el-row type="flex" class="row-line">
+            <el-col :span="24" class="col-center"
+              ><div
+                :class="[isGameOver==0? 'lose' : '',isGameOver==1? 'win' : '','big-title'] "
+              >
+                Needle v2.0
+              </div></el-col
+            >
+          </el-row>
+          <el-row type="flex">
+            <el-col :span="12" :offset="6"
+              ><div style="text-align: center">当前种子: {{seed}}</div></el-col
+            >
+          </el-row>
+          <el-row type="flex" :gutter="20" class="row-line">
+            <el-col :span="4" :offset="6" class="col-center flex-col">
+              <el-tooltip content="随机生成一局独一无二的地图" placement="top">
+                <el-button
+                  icon="el-icon-s-promotion"
+                  type="primary"
+                  @click="clickPractice"
+                ></el-button>
+              </el-tooltip>
+              <div style="color: #409eff; font-weight: bold">练习模式</div>
+              <div></div>
+            </el-col>
+            <el-col :span="4" class="col-center flex-col">
+              <el-tooltip
+                content="地图和他人相同，每五分钟更新一次"
+                placement="top"
+              >
+                <el-button
+                  icon="el-icon-trophy"
+                  type="warning"
+                  @click="clickContest"
+                ></el-button>
+              </el-tooltip>
+              <div style="color: #e6a23c; font-weight: bold">
+                竞技模式
+              </div></el-col
+            >
+            <el-col :span="4" class="col-center flex-col">
+              <el-popover placement="right" width="200" trigger="click">
+                <el-input
+                  v-model="customSeed"
+                  placeholder="自定义种子"
+                  @keyup.enter.native="submitSeed"
+                ></el-input>
+                <el-button
+                  icon="el-icon-star-off"
+                  type="success"
+                  slot="reference"
+                ></el-button>
+              </el-popover>
+              <div style="color: #67c23a; font-weight: bold">
+                自定义模式
+              </div></el-col
+            >
+          </el-row>
+          <el-row type="flex">
+            <el-col :span="6">
+              <div id="left-side">
+                <b style="margin: 0 0 20px 0; font-size: 20px">说明</b>
+                <div id="infos"></div>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="col-center flex-col">
+                <div id="game-board"></div>
+                <div id="chances">
+                  <span><image src="./chances.png"></image></span>
+                  <span> × {{chances}}</span>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="6"></el-col>
+          </el-row>
+        </el-main>
+      </el-container>
 
       <!-- 所有职业悬浮框说明 UPDATE HERE-->
       <div id="roles" style="display: none">
@@ -233,8 +293,9 @@
       </div>
     </div>
 
-    <script src="jquery.min.js"></script>
+    <script src="_library/js/jquery.min.js"></script>
     <script src="script.js" type="module"></script>
-    <script src="vue.js"></script>
+    <script src="_library/js/vue.js"></script>
+    <script src="_library/js/element.js"></script>
   </body>
 </html>
