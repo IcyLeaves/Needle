@@ -191,7 +191,7 @@ var app = new Vue({
                   delete that[ii][jj].signs["jammed"];
                   delete that[ii][jj].infos["jam-notes"];
                 }
-                this.refreshInfos(ii, jj);
+                this.refreshInfos(that[ii][jj]);
                 this.refreshAllSigns();
               }
               if (this.chances == 0) this.isGameOver = 0;
@@ -249,8 +249,7 @@ var app = new Vue({
       const urlSearchParams = new URLSearchParams(window.location.search);
       // 把键值对列表转换为一个对象
       const params = Object.fromEntries(urlSearchParams.entries());
-
-      if (!params && !params.seed) {
+      if (!params || !params.seed) {
         this.clickContest();
       }
       return params.seed;
