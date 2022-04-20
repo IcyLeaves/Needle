@@ -5,20 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Needle</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="_library/css/element.css" />
+
     <script src="_library/js/random.js"></script>
+    <!-- https://github.com/cburgmer/rasterizeHTML.js -->
+    <script type="text/javascript" src="_library/js/rasterizeHTML.js"></script>
+    <!-- https://github.com/jnordberg/gif.js -->
+    <script type="text/javascript" src="_library/js/gif.js"></script>
+
+    <link rel="stylesheet" href="_library/css/element.css" />
     <!-- 所有职业css UPDATE HERE-->
-    <link rel="stylesheet" href="target/target.css" />
-    <link rel="stylesheet" href="citizen/citizen.css" />
-    <link rel="stylesheet" href="detective/detective.css" />
-    <link rel="stylesheet" href="jam/jam.css" />
-    <link rel="stylesheet" href="crazy/crazy.css" />
-    <link rel="stylesheet" href="sheriff/sheriff.css" />
-    <link rel="stylesheet" href="killer/killer.css" />
-    <link rel="stylesheet" href="augur/augur.css" />
-    <link rel="stylesheet" href="volunteer/volunteer.css" />
-    <link rel="stylesheet" href="copies/copies.css" />
+    <div id="_csses">
+      <link rel="stylesheet" href="style.css" />
+      <link rel="stylesheet" href="target/target.css" />
+      <link rel="stylesheet" href="citizen/citizen.css" />
+      <link rel="stylesheet" href="detective/detective.css" />
+      <link rel="stylesheet" href="jam/jam.css" />
+      <link rel="stylesheet" href="crazy/crazy.css" />
+      <link rel="stylesheet" href="sheriff/sheriff.css" />
+      <link rel="stylesheet" href="killer/killer.css" />
+      <link rel="stylesheet" href="augur/augur.css" />
+      <link rel="stylesheet" href="volunteer/volunteer.css" />
+      <link rel="stylesheet" href="copies/copies.css" />
+    </div>
   </head>
   <body>
     <div id="app">
@@ -99,14 +107,18 @@
             <el-col :span="12" class="mid-border">
               <div class="col-center flex-col">
                 <div id="game-board"></div>
-                <div id="chances">
-                  🔍
-                  <span> × {{chances}}</span>
-                </div>
+                <div id="chances">🔍<span> × {{chances}}</span></div>
               </div>
             </el-col>
             <el-col :span="isMobile?0:6"></el-col>
           </el-row>
+          <canvas id="show-image" width="500" height="500"></canvas>
+          <image id="result-image"></image>
+          <!-- <el-row>
+            <el-col :span="24">
+              <canvas id="screenshot" width="500" height="500"></canvas>
+            </el-col>
+          </el-row> -->
         </el-main>
       </el-container>
 
@@ -287,8 +299,10 @@
     </div>
 
     <script src="_library/js/jquery.min.js"></script>
-    <script src="script.js" type="module"></script>
     <script src="_library/js/vue.js"></script>
     <script src="_library/js/element.js"></script>
+
+    <script src="script.js" type="module"></script>
+    <script></script>
   </body>
 </html>

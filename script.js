@@ -38,9 +38,14 @@ let notes = [
   "volunteer",
   "copies",
 ]; //UPDATE HERE
+
 var app = new Vue({
   el: "#app",
   data: {
+    //后台
+    gif: undefined,
+
+    //全局
     isMobile: false,
     seed: 0,
     customSeed: "",
@@ -65,60 +70,12 @@ var app = new Vue({
     copiesCurr: undefined,
   },
   methods: {
-    gameover() {
-      this.renderOverBoard();
-    },
-    renderOverBoard() {
-      for (var i = 0; i < ROWS; i++) {
-        for (var j = 0; j < COLS; j++) {
-          if (!this.boxArray[i][j].shown) {
-            var box =
-              document.getElementById("game-board").children[i].children[j];
-            box.classList.add(notes[this.boxArray[i][j].roleid]);
-            box.classList.add("over");
-          }
-        }
-      }
-    },
-
-    clearInfo() {
-      var infos = document.getElementById("infos");
-      infos.innerHTML = "";
-    },
-    addInfo(key) {
-      var roleDiv = document.getElementById(key).cloneNode(true);
-      roleDiv.setAttribute("id", `${key}-clone`);
-
-      var infos = document.getElementById("infos");
-      infos.appendChild(roleDiv);
-    },
-    refreshInfos(box) {
-      this.clearInfo();
-      for (var key in box.infos) {
-        this.addInfo(key);
-      }
-    },
-    refreshAllSigns() {
-      for (var boxRow of this.boxArray) {
-        for (var box of boxRow) {
-          this.refreshSigns(box);
-        }
-      }
-    },
-    deleteSign(box) {
-      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
-      signDiv.innerHTML = "";
-    },
-    addSign(key, box) {
-      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
-      var sign = document.getElementById(key).cloneNode(true);
-      signDiv.appendChild(sign);
-    },
-    refreshSigns(box) {
-      this.deleteSign(box);
-      for (var key in box.signs) {
-        this.addSign(key, box);
-      }
+    //游戏初始化
+    initGame() {
+      this.initDeck();
+      this.drawBoard();
+      this.initBoard();
+      this.augurDecks = augurInit(ROWS, COLS);
     },
     initDeck() {
       //生成洗牌数组
@@ -163,44 +120,7 @@ var app = new Vue({
           if (roleid == 9) this.copiesTeam.push(COMMON.setPair(i, j));
           // 点击事件
           {
-            var that = this.boxArray;
-            box.onclick = (e, context, ii, jj) => {
-              if (!ii) ii = e.currentTarget.i;
-              if (!jj) jj = e.currentTarget.j;
-              //减少一次猜测次数
-              if (!that[ii][jj].shown && this.chances > 0) {
-                //[志愿者]
-                volunteerCheck(app, that[ii][jj]);
-                this.chances--;
-
-                killerCountDown(app); //[杀手]
-                //[干扰者]
-                if (
-                  !that[ii][jj].signs["jammed"] &&
-                  jamCheck(app, that[ii][jj])
-                ) {
-                  that[ii][jj].signs["jammed"] = true;
-                  that[ii][jj].infos["jam-notes"] = true;
-                  this.isLastDark = false;
-                } else {
-                  //[警长]
-                  sheriffCheck(app, that[ii][jj]);
-                  //开始执行效果
-                  randomPeople[roleid](e, app, ii, jj);
-                  that[ii][jj].shown = true;
-
-                  delete that[ii][jj].signs["jammed"];
-                  delete that[ii][jj].infos["jam-notes"];
-                }
-                this.refreshInfos(that[ii][jj]);
-                this.refreshAllSigns();
-              }
-              if (this.isGameOver == -1 && this.chances == 0)
-                this.isGameOver = 0;
-              if (this.isGameOver != -1) {
-                this.gameover();
-              }
-            };
+            box.onclick = this.step;
           }
           // 孩子节点
           {
@@ -246,16 +166,122 @@ var app = new Vue({
         this.boxArray.push(boxRow);
       }
     },
-    initRandom() {
-      // 创建一个URLSearchParams实例
-      const urlSearchParams = new URLSearchParams(window.location.search);
-      // 把键值对列表转换为一个对象
-      const params = Object.fromEntries(urlSearchParams.entries());
-      if (!params || !params.seed) {
-        this.clickContest();
+    //主逻辑
+    step(e, context, ii, jj) {
+      var that = this.boxArray;
+      if (!ii) ii = e.currentTarget.i;
+      if (!jj) jj = e.currentTarget.j;
+      //减少一次猜测次数
+      if (!that[ii][jj].shown && this.chances > 0) {
+        //[志愿者]
+        volunteerCheck(app, that[ii][jj]);
+        this.chances--;
+
+        killerCountDown(app); //[杀手]
+        //[干扰者]
+        if (!that[ii][jj].signs["jammed"] && jamCheck(app, that[ii][jj])) {
+          that[ii][jj].signs["jammed"] = true;
+          that[ii][jj].infos["jam-notes"] = true;
+          this.isLastDark = false;
+        } else {
+          //[警长]
+          sheriffCheck(app, that[ii][jj]);
+          //开始执行效果
+          randomPeople[that[ii][jj].roleid](e, app, ii, jj);
+          that[ii][jj].shown = true;
+
+          delete that[ii][jj].signs["jammed"];
+          delete that[ii][jj].infos["jam-notes"];
+        }
+        this.refreshInfos(that[ii][jj]);
+        this.refreshAllSigns();
+        this.drawCanvas();
       }
-      return params.seed;
+      if (this.isGameOver == -1 && this.chances == 0) this.isGameOver = 0;
+      if (this.isGameOver != -1) {
+        this.gameover();
+      }
     },
+    drawCanvas() {
+      var c = document.getElementById("show-image");
+      var ctx = c.getContext("2d");
+      ctx.fillStyle = "#D9F2FE";
+      ctx.fillRect(20, 20, 150, 100);
+      // var gameBoard = document.getElementById("game-board");
+      // var csses = document.getElementById("_csses");
+      // rasterizeHTML
+      //   .drawHTML(gameBoard.innerHTML + csses.innerHTML, c)
+      //   .then((e) => {
+      //     console.log(e);
+      //     gif.addFrame(ctx, { delay: 500 });
+      //   });
+      gif.addFrame(c);
+    },
+    //gameover
+    gameover() {
+      this.renderOverBoard();
+      this.drawCanvas();
+      setTimeout(() => {
+        gif.render();
+        gif.on("finished", (blob) => {
+          document.getElementById("result-image").src =
+            URL.createObjectURL(blob);
+        });
+      }, 2000);
+    },
+    renderOverBoard() {
+      for (var i = 0; i < ROWS; i++) {
+        for (var j = 0; j < COLS; j++) {
+          if (!this.boxArray[i][j].shown) {
+            var box =
+              document.getElementById("game-board").children[i].children[j];
+            box.classList.add(notes[this.boxArray[i][j].roleid]);
+            box.classList.add("over");
+          }
+        }
+      }
+    },
+    //UI帧更新
+    clearInfo() {
+      var infos = document.getElementById("infos");
+      infos.innerHTML = "";
+    },
+    addInfo(key) {
+      var roleDiv = document.getElementById(key).cloneNode(true);
+      roleDiv.setAttribute("id", `${key}-clone`);
+
+      var infos = document.getElementById("infos");
+      infos.appendChild(roleDiv);
+    },
+    refreshInfos(box) {
+      this.clearInfo();
+      for (var key in box.infos) {
+        this.addInfo(key);
+      }
+    },
+    refreshAllSigns() {
+      for (var boxRow of this.boxArray) {
+        for (var box of boxRow) {
+          this.refreshSigns(box);
+        }
+      }
+    },
+    deleteSign(box) {
+      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
+      signDiv.innerHTML = "";
+    },
+    addSign(key, box) {
+      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
+      var sign = document.getElementById(key).cloneNode(true);
+      signDiv.appendChild(sign);
+    },
+    refreshSigns(box) {
+      this.deleteSign(box);
+      for (var key in box.signs) {
+        this.addSign(key, box);
+      }
+    },
+    //
     listenWindowResize() {
       var that = this;
       const getWindowInfo = () => {
@@ -268,6 +294,16 @@ var app = new Vue({
       };
       getWindowInfo();
       window.addEventListener("resize", getWindowInfo);
+    },
+    initRandom() {
+      // 创建一个URLSearchParams实例
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      // 把键值对列表转换为一个对象
+      const params = Object.fromEntries(urlSearchParams.entries());
+      if (!params || !params.seed) {
+        this.clickContest();
+      }
+      return params.seed;
     },
     //html直接引用的事件
     createRandomSeed() {
@@ -294,11 +330,42 @@ var app = new Vue({
     this.listenWindowResize();
     this.seed = this.initRandom();
     Math.seedrandom(this.seed); //look http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
-    this.initDeck();
-    this.drawBoard();
-    this.initBoard();
 
-    this.augurDecks = augurInit(ROWS, COLS);
+    this.initGame();
   },
 });
-window.vue = app;
+var gif = new GIF({
+  workers: 2,
+  quality: 10,
+  width: 500,
+  height: 500,
+  workerScript: "./_library/js/gif.worker.js",
+  background: "#fff",
+  debug: true,
+});
+let c = document.getElementById("show-image");
+let ctx = c.getContext("2d");
+ctx.fillStyle = "#FF0000";
+ctx.fillRect(10, 10, 20, 50);
+
+// or a canvas element
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.addFrame(c);
+gif.render();
+gif.on("finished", function (blob) {
+  console.log(blob);
+  let url = URL.createObjectURL(blob);
+  // 这里是blob
+  document.getElementById("result-image").src = url;
+  //
+});
