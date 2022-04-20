@@ -13,7 +13,7 @@ function copiesCheck(context, i, j) {
     var pair = COMMON.withdraw(context.copiesTeam);
     //清除上次的标记
     var [currX, currY] = COMMON.getPair(context.copiesCurr);
-    if (currX) {
+    if (currX > -1) {
       var idx = context.boxArray[currX][currY].copiesDir;
       delete context.boxArray[currX][currY].infos[`copies-notes-${idx}`];
       delete context.boxArray[currX][currY].signs[`copies-signs-${idx}`];

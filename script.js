@@ -38,6 +38,37 @@ let notes = [
   "volunteer",
   "copies",
 ]; //UPDATE HERE
+// https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  const blob = new Blob(byteArrays, { type: contentType });
+  return blob;
+};
+var gifImages = [];
+
+// gif.addFrame(c);
+// gif.render();
+// gif.on("finished", function (blob) {
+//   console.log(blob);
+//   let url = URL.createObjectURL(blob);
+//   // 这里是blob
+//   document.getElementById("result-image").src = url;
+//   //
+// });
 
 var app = new Vue({
   el: "#app",
@@ -76,6 +107,7 @@ var app = new Vue({
       this.drawBoard();
       this.initBoard();
       this.augurDecks = augurInit(ROWS, COLS);
+      this.drawCanvas();
     },
     initDeck() {
       //生成洗牌数组
@@ -203,30 +235,59 @@ var app = new Vue({
       }
     },
     drawCanvas() {
-      var c = document.getElementById("show-image");
-      var ctx = c.getContext("2d");
-      ctx.fillStyle = "#D9F2FE";
-      ctx.fillRect(20, 20, 150, 100);
-      // var gameBoard = document.getElementById("game-board");
-      // var csses = document.getElementById("_csses");
-      // rasterizeHTML
-      //   .drawHTML(gameBoard.innerHTML + csses.innerHTML, c)
-      //   .then((e) => {
-      //     console.log(e);
-      //     gif.addFrame(ctx, { delay: 500 });
-      //   });
-      gif.addFrame(c);
+      var gameBoard = document.getElementById("main-image");
+      var show = document.getElementById("show-image");
+      domtoimage
+        .toPng(gameBoard)
+        .then(function (dataUrl) {
+          var img = new Image();
+          img.src = dataUrl;
+          show.innerHTML = "";
+          show.appendChild(img);
+
+          const blob = b64toBlob(dataUrl.substr(22), "image/png");
+          const blobUrl = URL.createObjectURL(blob);
+          gifImages.push(blobUrl);
+        })
+        .catch(function (error) {
+          console.error("oops, something went wrong!", error);
+        });
     },
     //gameover
     gameover() {
       this.renderOverBoard();
       this.drawCanvas();
       setTimeout(() => {
-        gif.render();
-        gif.on("finished", (blob) => {
-          document.getElementById("result-image").src =
-            URL.createObjectURL(blob);
-        });
+        gifshot.createGIF(
+          {
+            gifWidth: 300,
+            gifHeight: 300,
+            images: gifImages,
+            interval: 0.5,
+            numFrames: 10,
+            frameDuration: 1,
+            fontWeight: "normal",
+            fontSize: "16px",
+            fontFamily: "sans-serif",
+            fontColor: "#ffffff",
+            textAlign: "center",
+            textBaseline: "bottom",
+            sampleInterval: 10,
+            numWorkers: 2,
+          },
+          function (obj) {
+            console.log(obj);
+            if (!obj.error) {
+              // var image = obj.image,
+              //   animatedImage = document.createElement("img");
+              // animatedImage.src = image;
+              // document.body.appendChild(animatedImage);
+              const blob = b64toBlob(obj.image.substr(22), "image/gif");
+              document.getElementById("result-image").src =
+                URL.createObjectURL(blob);
+            }
+          }
+        );
       }, 2000);
     },
     renderOverBoard() {
@@ -334,38 +395,4 @@ var app = new Vue({
     this.initGame();
   },
 });
-var gif = new GIF({
-  workers: 2,
-  quality: 10,
-  width: 500,
-  height: 500,
-  workerScript: "./_library/js/gif.worker.js",
-  background: "#fff",
-  debug: true,
-});
-let c = document.getElementById("show-image");
-let ctx = c.getContext("2d");
-ctx.fillStyle = "#FF0000";
-ctx.fillRect(10, 10, 20, 50);
-
-// or a canvas element
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.addFrame(c);
-gif.render();
-gif.on("finished", function (blob) {
-  console.log(blob);
-  let url = URL.createObjectURL(blob);
-  // 这里是blob
-  document.getElementById("result-image").src = url;
-  //
-});
+window.vue = app;

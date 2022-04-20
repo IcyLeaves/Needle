@@ -4,7 +4,7 @@
   align-items: center;
 }
 .el-main {
-  padding: 0;
+  padding: 10px;
 }
 .flex-col {
   display: flex;
@@ -30,6 +30,7 @@
   align-items: center;
   flex-direction: row;
   flex-wrap: wrap;
+  background-color: white;
 }
 #chances {
   display: flex;
@@ -49,6 +50,10 @@
 .left-title {
   font-size: 20px;
 }
+#main-image {
+  background-color: white;
+}
+
 .rowspan {
   margin-right: 20px;
 }
