@@ -52,7 +52,7 @@
             </el-col>
             <el-col :span="4" class="col-center flex-col">
               <el-tooltip
-                content="地图和他人相同，每五分钟更新一次"
+                content="地图和他人相同，每一小时更新一次"
                 placement="top"
               >
                 <el-button
@@ -84,13 +84,19 @@
             >
           </el-row>
           <el-row type="flex">
-            <el-col :span="6">
-              <div id="left-side">
-                <b style="margin: 0 0 20px 0; font-size: 20px">说明</b>
-                <div id="infos"></div>
-              </div>
+            <el-col
+              :span="isMobile?12:6"
+              class="flex-col"
+              style="align-items: center"
+            >
+              <b class="left-title">说明</b>
+              <div
+                id="infos"
+                class="flex-col"
+                style="padding: 20px 0; align-items: center"
+              ></div>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" class="mid-border">
               <div class="col-center flex-col">
                 <div id="game-board"></div>
                 <div id="chances">
@@ -99,7 +105,7 @@
                 </div>
               </div>
             </el-col>
-            <el-col :span="6"></el-col>
+            <el-col :span="isMobile?0:6"></el-col>
           </el-row>
         </el-main>
       </el-container>

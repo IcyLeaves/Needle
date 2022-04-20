@@ -41,6 +41,7 @@ let notes = [
 var app = new Vue({
   el: "#app",
   data: {
+    isMobile: false,
     seed: 0,
     customSeed: "",
     chances: 16,
@@ -255,6 +256,20 @@ var app = new Vue({
       }
       return params.seed;
     },
+    listenWindowResize() {
+      var that = this;
+      const getWindowInfo = () => {
+        const windowInfo = {
+          width: window.innerWidth,
+          hight: window.innerHeight,
+        };
+        if (windowInfo.width < 900) that.isMobile = true;
+        else that.isMobile = false;
+      };
+      getWindowInfo();
+      window.addEventListener("resize", getWindowInfo);
+    },
+    //html直接引用的事件
     createRandomSeed() {
       var res = "";
       var chs = "qwertyuiopasdfghjklzxcvbnm1234567890";
@@ -268,7 +283,7 @@ var app = new Vue({
     },
     clickContest() {
       var d = new Date();
-      var idx = Math.log(Math.floor(d.getTime() / (1000 * 60 * 5)));
+      var idx = Math.log(Math.floor(d.getTime() / (1000 * 60 * 60)));
       window.location.href = "/?seed=" + idx;
     },
     submitSeed(e) {
@@ -276,6 +291,7 @@ var app = new Vue({
     },
   },
   mounted: function () {
+    this.listenWindowResize();
     this.seed = this.initRandom();
     Math.seedrandom(this.seed); //look http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
     this.initDeck();
