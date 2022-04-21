@@ -28,10 +28,14 @@ app.post("/api", multipartyMiddleware, function (req, res) {
   console.log(req.files);
   var data = new FormData();
   data.append("image", Fs.createReadStream(req.files.image.path));
+<<<<<<< HEAD
   data.append(
     "name",
     new Date().getTime().toString() + Math.floor(Math.random() * 100)
   );
+=======
+  data.append("name", new Date().getTime().toString() + ".gif");
+>>>>>>> 8a1b99dfdd4d3533a43c7f701251a29ae51b3033
   data.append("key", "f6dffe33f7b82c2bf50a58fc932bddfb");
   data.append("expiration", 60 * 60 * 24 * 7);
   axios({
@@ -43,6 +47,10 @@ app.post("/api", multipartyMiddleware, function (req, res) {
     data: data,
   })
     .then(function (response) {
+<<<<<<< HEAD
+=======
+      console.log(response.data);
+>>>>>>> 8a1b99dfdd4d3533a43c7f701251a29ae51b3033
       res.status(200).send(response.data.data.image.url);
     })
     .catch(function (error) {
