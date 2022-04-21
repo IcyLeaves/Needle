@@ -53,7 +53,51 @@
 #main-image {
   background-color: white;
 }
-
+.modal-overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+}
+.modal-content {
+  position: relative;
+  border-radius: 8px;
+  border: 1px solid rgb(246 247 248);
+  background: white;
+  box-shadow: 0 4px 23px 0 rgb(0 0 0 / 20%);
+  width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  max-width: 500px;
+  padding: 16px;
+  box-sizing: border-box;
+  z-index: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.modal-title {
+  font-weight: bold;
+  font-size: 30px;
+  margin: 20px 0;
+}
+.modal-item-value {
+  font-size: 20px;
+}
+.modal-item-name {
+  color: gray;
+}
+.modal-tag {
+  cursor: default;
+  margin: 5px;
+}
 .rowspan {
   margin-right: 20px;
 }
@@ -75,6 +119,9 @@
 .bad {
   background-color: rgb(30, 30, 30);
   color: white;
+}
+.bad .win {
+  color: #67c23a;
 }
 .notes-title {
   font-weight: bold;

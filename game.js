@@ -1,4 +1,5 @@
 import * as COMMON from "./_common/common.js";
+import { collectAwards } from "./_common/award.js";
 //UPDATE HERE
 import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
@@ -55,7 +56,7 @@ const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
     byteArrays.push(byteArray);
   }
 
-  const blob = new Blob(byteArrays, { type: contentType });
+  var blob = new Blob(byteArrays, { type: contentType });
   return blob;
 };
 var gifImages = [];
@@ -73,11 +74,11 @@ var gifImages = [];
 var app = new Vue({
   el: "#app",
   data: {
-    //后台
-    gif: undefined,
-
-    //全局
+    //全局UI
     isMobile: false,
+    showRank: false,
+    gifStatus: -2,
+    //全局数据
     seed: 0,
     customSeed: "",
     chances: 16,
@@ -85,6 +86,15 @@ var app = new Vue({
     decks: [],
     boxArray: [],
     isGameOver: -1,
+    gifData: 0,
+    gifURL: "",
+    //统计指标
+    metrics: {
+      完成度: 0,
+      剩余线索: 0,
+      调查次数: 0,
+    },
+    awards: [],
     //[疯子]
     isLastDark: false,
     //[杀手]
@@ -200,46 +210,49 @@ var app = new Vue({
     },
     //主逻辑
     step(e, context, ii, jj) {
-      var that = this.boxArray;
-      if (!ii) ii = e.currentTarget.i;
-      if (!jj) jj = e.currentTarget.j;
-      //减少一次猜测次数
-      if (!that[ii][jj].shown && this.chances > 0) {
-        //[志愿者]
-        volunteerCheck(app, that[ii][jj]);
-        this.chances--;
+      if (this.isGameOver == -1) {
+        var that = this.boxArray;
+        if (!ii) ii = e.currentTarget.i;
+        if (!jj) jj = e.currentTarget.j;
+        //减少一次猜测次数
+        if (!that[ii][jj].shown && this.chances > 0) {
+          //[志愿者]
+          volunteerCheck(app, that[ii][jj]);
+          this.chances--;
+          this.metrics["调查次数"]++;
 
-        killerCountDown(app); //[杀手]
-        //[干扰者]
-        if (!that[ii][jj].signs["jammed"] && jamCheck(app, that[ii][jj])) {
-          that[ii][jj].signs["jammed"] = true;
-          that[ii][jj].infos["jam-notes"] = true;
-          this.isLastDark = false;
-        } else {
-          //[警长]
-          sheriffCheck(app, that[ii][jj]);
-          //开始执行效果
-          randomPeople[that[ii][jj].roleid](e, app, ii, jj);
-          that[ii][jj].shown = true;
+          killerCountDown(app); //[杀手]
+          //[干扰者]
+          if (!that[ii][jj].signs["jammed"] && jamCheck(app, that[ii][jj])) {
+            that[ii][jj].signs["jammed"] = true;
+            that[ii][jj].infos["jam-notes"] = true;
+            this.isLastDark = false;
+          } else {
+            //[警长]
+            sheriffCheck(app, that[ii][jj]);
+            //开始执行效果
+            randomPeople[that[ii][jj].roleid](e, app, ii, jj);
+            that[ii][jj].shown = true;
 
-          delete that[ii][jj].signs["jammed"];
-          delete that[ii][jj].infos["jam-notes"];
+            delete that[ii][jj].signs["jammed"];
+            delete that[ii][jj].infos["jam-notes"];
+          }
+          this.refreshInfos(that[ii][jj]);
+          this.refreshAllSigns();
+          this.drawCanvas();
         }
-        this.refreshInfos(that[ii][jj]);
-        this.refreshAllSigns();
-        this.drawCanvas();
-      }
-      if (this.isGameOver == -1 && this.chances == 0) this.isGameOver = 0;
-      if (this.isGameOver != -1) {
-        this.gameover();
+        if (this.isGameOver == -1 && this.chances == 0) this.isGameOver = 0;
+        if (this.isGameOver != -1) {
+          this.gameover();
+        }
       }
     },
-    drawCanvas() {
+    drawCanvas(isLast) {
       var gameBoard = document.getElementById("main-image");
       var show = document.getElementById("show-image");
       domtoimage
         .toPng(gameBoard)
-        .then(function (dataUrl) {
+        .then((dataUrl) => {
           var img = new Image();
           img.src = dataUrl;
           show.innerHTML = "";
@@ -248,6 +261,36 @@ var app = new Vue({
           const blob = b64toBlob(dataUrl.substr(22), "image/png");
           const blobUrl = URL.createObjectURL(blob);
           gifImages.push(blobUrl);
+          if (isLast) {
+            gifshot.createGIF(
+              {
+                gifWidth: 336,
+                gifHeight: 369,
+                images: gifImages,
+                interval: 0.5,
+                numFrames: 10,
+                frameDuration: 1,
+                sampleInterval: 10,
+                numWorkers: 2,
+              },
+              (obj) => {
+                if (!obj.error) {
+                  // var image = obj.image,
+                  //   animatedImage = document.createElement("img");
+                  // animatedImage.src = image;
+                  // document.body.appendChild(animatedImage);
+                  var blob = b64toBlob(obj.image.substr(22), "image/gif");
+                  this.gifData = blob;
+                  //
+                  blob.lastModifiedDate = new Date();
+                  // blob.name = new Date().getTime().toString() + ".gif";
+                  this.gifStatus = -1;
+                  // document.getElementById("result-image").src =
+                  //   URL.createObjectURL(blob);
+                }
+              }
+            );
+          }
         })
         .catch(function (error) {
           console.error("oops, something went wrong!", error);
@@ -256,39 +299,12 @@ var app = new Vue({
     //gameover
     gameover() {
       this.renderOverBoard();
-      this.drawCanvas();
+      this.drawCanvas(true);
       setTimeout(() => {
-        gifshot.createGIF(
-          {
-            gifWidth: 300,
-            gifHeight: 300,
-            images: gifImages,
-            interval: 0.5,
-            numFrames: 10,
-            frameDuration: 1,
-            fontWeight: "normal",
-            fontSize: "16px",
-            fontFamily: "sans-serif",
-            fontColor: "#ffffff",
-            textAlign: "center",
-            textBaseline: "bottom",
-            sampleInterval: 10,
-            numWorkers: 2,
-          },
-          function (obj) {
-            console.log(obj);
-            if (!obj.error) {
-              // var image = obj.image,
-              //   animatedImage = document.createElement("img");
-              // animatedImage.src = image;
-              // document.body.appendChild(animatedImage);
-              const blob = b64toBlob(obj.image.substr(22), "image/gif");
-              document.getElementById("result-image").src =
-                URL.createObjectURL(blob);
-            }
-          }
-        );
-      }, 2000);
+        this.calculateMetrics();
+        this.awards = collectAwards();
+        this.showRank = true;
+      }, 1000);
     },
     renderOverBoard() {
       for (var i = 0; i < ROWS; i++) {
@@ -301,6 +317,18 @@ var app = new Vue({
           }
         }
       }
+    },
+    calculateMetrics() {
+      this.metrics["剩余线索"] = this.chances;
+      for (var i = 0; i < ROWS; i++) {
+        for (var j = 0; j < COLS; j++) {
+          if (this.boxArray[i][j].shown) {
+            this.metrics["完成度"]++;
+          }
+        }
+      }
+      this.metrics["完成度"] =
+        Math.floor((this.metrics["完成度"] * 100) / ROWS / COLS) + "%";
     },
     //UI帧更新
     clearInfo() {
@@ -386,6 +414,28 @@ var app = new Vue({
     submitSeed(e) {
       window.location.href = "/?seed=" + this.customSeed;
     },
+    clickOverlay(e) {
+      if (e.target.className == "modal-overlay") this.showRank = false;
+    },
+    clickMetrics(e) {
+      this.showRank = true;
+    },
+    clickShare(e) {
+      this.gifStatus = 0;
+      //上传gifData
+      var formData = new FormData();
+      formData.append("image", this.gifData);
+      axios
+        .post("/api", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          this.gifURL = response.data;
+          this.gifStatus = 1;
+        });
+    },
   },
   mounted: function () {
     this.listenWindowResize();
@@ -393,6 +443,8 @@ var app = new Vue({
     Math.seedrandom(this.seed); //look http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
 
     this.initGame();
+    var all = document.getElementById("app");
+    all.style.cssText = "";
   },
 });
 window.vue = app;
