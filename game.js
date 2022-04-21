@@ -1,5 +1,5 @@
 import * as COMMON from "./_common/common.js";
-import { collectAwards } from "./_common/award.js";
+import { collectAwards, ACHIEVE } from "./_common/award.js";
 //UPDATE HERE
 import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
@@ -275,18 +275,10 @@ var app = new Vue({
               },
               (obj) => {
                 if (!obj.error) {
-                  // var image = obj.image,
-                  //   animatedImage = document.createElement("img");
-                  // animatedImage.src = image;
-                  // document.body.appendChild(animatedImage);
                   var blob = b64toBlob(obj.image.substr(22), "image/gif");
                   this.gifData = blob;
-                  //
                   blob.lastModifiedDate = new Date();
-                  // blob.name = new Date().getTime().toString() + ".gif";
                   this.gifStatus = -1;
-                  // document.getElementById("result-image").src =
-                  //   URL.createObjectURL(blob);
                 }
               }
             );
@@ -319,7 +311,10 @@ var app = new Vue({
       }
     },
     calculateMetrics() {
+      ACHIEVE.gameIsWin = this.isGameOver == 1;
+      ACHIEVE.metricsUsedChances = this.metrics["调查次数"];
       this.metrics["剩余线索"] = this.chances;
+      ACHIEVE.metricsRemainChances = this.chances;
       for (var i = 0; i < ROWS; i++) {
         for (var j = 0; j < COLS; j++) {
           if (this.boxArray[i][j].shown) {
@@ -327,8 +322,9 @@ var app = new Vue({
           }
         }
       }
-      this.metrics["完成度"] =
-        Math.floor((this.metrics["完成度"] * 100) / ROWS / COLS) + "%";
+      var percent = Math.floor((this.metrics["完成度"] * 100) / ROWS / COLS);
+      ACHIEVE.metricsComplete = percent;
+      this.metrics["完成度"] = percent + "%";
     },
     //UI帧更新
     clearInfo() {
