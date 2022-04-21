@@ -11,6 +11,7 @@
     <script type="text/javascript" src="_library/js/gifshot.min.js"></script>
     <!-- https://github.com/tsayen/dom-to-image -->
     <script src="_library/js/dom2image.min.js"></script>
+    <script src="_library/js/axios.min.js"></script>
 
     <link rel="stylesheet" href="_library/css/element.css" />
     <!-- 所有职业css UPDATE HERE-->
@@ -27,17 +28,75 @@
     <link rel="stylesheet" href="copies/copies.css" />
   </head>
   <body>
-    <div id="app">
+    <div id="app" style="display: none">
       <el-container>
+        <transition name="el-fade-in-linear">
+          <div class="modal-overlay" v-show="showRank" @click="clickOverlay">
+            <div class="modal-content">
+              <div :class="[isGameOver==0? 'lose' : 'win','modal-title']">
+                {{isGameOver==0? '失之交臂' : '久别重逢'}}
+              </div>
+              <el-row type="flex" justify="center" style="width: 100%">
+                <el-col
+                  v-for="(val,key,i) in metrics"
+                  :key="i"
+                  :span="6"
+                  class="col-center flex-col"
+                >
+                  <div class="modal-item-value">{{val}}</div>
+                  <div class="modal-item-name">{{key}}</div>
+                </el-col>
+              </el-row>
+              <div class="modal-title" style="font-size: 25px">评价</div>
+              <el-row
+                type="flex"
+                justify="center"
+                style="width: 100%; flex-wrap: wrap"
+              >
+                <el-tooltip
+                  v-for="(item,i) in awards"
+                  :content="item.note"
+                  placement="top"
+                >
+                  <el-tag
+                    class="modal-tag"
+                    :color="item.color"
+                    type="dark"
+                    style="border: none"
+                    >{{item.title}}</el-tag
+                  >
+                </el-tooltip>
+              </el-row>
+              <el-divider></el-divider>
+              <el-row type="flex" justify="center" style="width: 100%">
+                <el-col :span="24" class="col-center flex-col">
+                  <el-button
+                    v-show="gifStatus<=-1"
+                    @click="clickShare"
+                    :disabled="gifStatus==-2"
+                    >生成动图</el-button
+                  >
+                  <div v-show="gifStatus==0">动图生成中...</div>
+                  <div v-show="gifStatus==1">动图分享：{{gifURL}}</div>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </transition>
         <el-main>
           <el-row type="flex" class="row-line">
-            <el-col :span="24" class="col-center"
-              ><div
-                :class="[isGameOver==0? 'lose' : '',isGameOver==1? 'win' : '','big-title'] "
+            <el-col :span="16" :offset="4" class="col-center">
+              <div class="big-title">Needle v2.0</div>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                type="info"
+                icon="el-icon-s-data"
+                @click="clickMetrics"
+                v-show="isGameOver>=0"
               >
-                Needle v2.0
-              </div></el-col
-            >
+              </el-button>
+            </el-col>
           </el-row>
           <el-row type="flex">
             <el-col :span="12" :offset="6"
@@ -113,7 +172,7 @@
             <el-col :span="isMobile?0:6"></el-col>
           </el-row>
           <div style="display: none" id="show-image"></div>
-          <image id="result-image"></image>
+          <image style="display: none" id="result-image"></image>
           <!-- <el-row>
             <el-col :span="24">
               <canvas id="screenshot" width="500" height="500"></canvas>
@@ -186,7 +245,8 @@
           <div class="notes-right">
             <div style="color: #ffe082" class="notes-title">杀手</div>
             <div class="notes-content">
-              现身后，后三次调查如果使目标现身，反而输掉游戏
+              现身后，后三次调查如果使<span class="win">目标</span
+              >现身，反而输掉游戏
             </div>
           </div>
         </div>
@@ -198,7 +258,8 @@
                 <i>杀手正在寻找目标</i>
               </div>
               <div class="notes-content">
-                后{{i}}次调查尽量不要使目标现身，否则目标会被干掉！
+                后{{i}}次调查尽量不要使<span class="win">目标</span
+                >现身，否则<span class="win">目标</span>会被干掉！
               </div>
             </div>
           </div>
@@ -209,7 +270,9 @@
             <div style="color: #ffe082" class="notes-title">
               <i>目标死了，任务失败</i>
             </div>
-            <div class="notes-content">很遗憾，你帮杀手找到了目标...</div>
+            <div class="notes-content">
+              很遗憾，你帮杀手找到了<span class="win">目标</span>...
+            </div>
           </div>
         </div>
         <div id="augur" class="notes">
@@ -257,7 +320,11 @@
           <div class="notes-right">
             <div style="color: #80cbc4" class="notes-title">替身</div>
             <div class="notes-content">
-              目标将要现身时，会和目标交换位置并代替他现身。如果是这样，标出目标的方位
+              <span class="win">目标</span>将要现身时，会和<span class="win"
+                >目标</span
+              >交换位置并代替他现身。如果是这样，标出<span class="win"
+                >目标</span
+              >的方位
             </div>
           </div>
         </div>
@@ -273,7 +340,8 @@
               <i>这次又让他逃了</i>
             </div>
             <div class="notes-content">
-              替身保护了目标不被发现，但同样暴露了重要的线索！
+              替身保护了<span class="win">目标</span
+              >不被发现，但同样暴露了重要的线索！
             </div>
           </div>
         </div>
@@ -302,7 +370,7 @@
     <script src="_library/js/vue.js"></script>
     <script src="_library/js/element.js"></script>
 
-    <script src="script.js" type="module"></script>
+    <script src="game.js" type="module"></script>
     <script></script>
   </body>
 </html>

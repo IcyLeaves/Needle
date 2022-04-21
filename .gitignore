@@ -1,3 +1,6 @@
 .htaccess
 .user.ini
 404.html
+node_modules/
+.well-known
+_backend/out.log
