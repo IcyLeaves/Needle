@@ -16,6 +16,8 @@ var ACHIEVE = {
   metricsUsedChances: 0, //调查次数
   cntChancesIsOne: 0, //线索为1的次数
   boardGameOver: undefined, //游戏结束时的地图
+  isKilled: false, //是否被【杀手】干掉
+  isAddChancesByCrazy: false, //是否靠【疯子】补充线索
 };
 
 var AWARDS = [
@@ -72,20 +74,22 @@ var AWARDS = [
       },
     ],
     checkFunc: () => {
+      var res = [];
       var win = ACHIEVE.gameIsWin;
       var chances = ACHIEVE.metricsRemainChances;
       switch (win) {
         case true:
-          if (chances == 0) return "0-0";
-          else if (chances <= 5) return "0-1";
-          else if (chances <= 10) return "0-2";
-          else if (chances <= 20) return "0-3";
-          else if (chances >= 40 && chances < 100) return "0-4";
-          else if (chances >= 100) return "0-5";
+          if (chances == 0) res.push("0-0");
+          else if (chances <= 5) res.push("0-1");
+          else if (chances <= 10) res.push("0-2");
+          else if (chances <= 20) res.push("0-3");
+          else if (chances >= 40 && chances < 100) res.push("0-4");
+          else if (chances >= 100) res.push("0-5");
         case false:
-          if (chances >= 100) return "0-7";
-          else if (chances >= 20) return "0-6";
+          if (chances >= 100) res.push("0-7");
+          else if (chances >= 20) res.push("0-6");
       }
+      return res;
     },
   },
   {
@@ -141,7 +145,7 @@ var AWARDS = [
       },
       {
         id: "1-8",
-        title: "无功而返",
+        title: "无力回天",
         color: RANK.RARE,
         note: "完成度至少90%的情况下失败",
       },
@@ -169,27 +173,36 @@ var AWARDS = [
         color: RANK.RARE,
         note: "完成度至少90%的情况下成功",
       },
+      {
+        id: "1-13",
+        title: "输在起跑线",
+        color: RANK.LEGEND,
+        note: "完成度为0%的情况下失败",
+      },
     ],
     checkFunc: () => {
+      var res = [];
       var win = ACHIEVE.gameIsWin;
       var complete = ACHIEVE.metricsComplete;
       switch (win) {
         case true:
-          if (complete <= 10) return "1-0";
-          else if (complete <= 20) return "1-1";
-          else if (complete <= 30) return "1-2";
-          else if (complete <= 40) return "1-3";
-          else if (complete <= 50) return "1-4";
-          else if (complete >= 80 && complete < 90) return "1-11";
-          else if (complete >= 90 && complete < 100) return "1-12";
-          else if (complete === 100) return "1-9";
+          if (complete <= 10) res.push("1-0");
+          else if (complete <= 20) res.push("1-1");
+          else if (complete <= 30) res.push("1-2");
+          else if (complete <= 40) res.push("1-3");
+          else if (complete <= 50) res.push("1-4");
+          else if (complete >= 80 && complete < 90) res.push("1-11");
+          else if (complete >= 90 && complete < 100) res.push("1-12");
+          else if (complete === 100) res.push("1-9");
         case false:
-          if (complete <= 10) return "1-5";
-          else if (complete <= 20) return "1-6";
-          else if (complete >= 80 && complete < 90) return "1-7";
-          else if (complete >= 90 && complete < 100) return "1-8";
-          else if (complete === 100) return "1-10";
+          if (complete === 0) res.push("1-13");
+          else if (complete <= 10) res.push("1-5");
+          else if (complete <= 20) res.push("1-6");
+          else if (complete >= 80 && complete < 90) res.push("1-7");
+          else if (complete >= 90 && complete < 100) res.push("1-8");
+          else if (complete === 100) res.push("1-10");
       }
+      return res;
     },
   },
   {
@@ -213,12 +226,21 @@ var AWARDS = [
         color: RANK.RARE,
         note: "至少出现10次剩余线索为1的情况，最后获胜",
       },
+      {
+        id: "2-3",
+        title: "坏心办好事",
+        color: RANK.RARE,
+        note: "【疯子】的效果增多了你的线索",
+      },
     ],
     checkFunc: () => {
+      var res = [];
       var times = ACHIEVE.cntChancesIsOne;
-      if (times >= 10) return "2-2";
-      else if (times >= 7) return "2-1";
-      else if (times >= 3) return "2-0";
+      if (times >= 10) res.push("2-2");
+      else if (times >= 7) res.push("2-1");
+      else if (times >= 3) res.push("2-0");
+      if (ACHIEVE.isAddChancesByCrazy == true) res.push("2-3");
+      return res;
     },
   },
   {
@@ -254,28 +276,37 @@ var AWARDS = [
         color: RANK.EPIC,
         note: "失败且完成度<90%时，在目标周围的角色有8个且已经全部现身",
       },
+      {
+        id: "3-5",
+        title: "好心办坏事",
+        color: RANK.UNCOMMON,
+        note: "因目标被【杀手】干掉而失败",
+      },
     ],
     checkFunc: () => {
-      if (ACHIEVE.gameIsWin == false) {
-        var res = 0;
+      var res = [];
+      if (ACHIEVE.gameIsWin == false && ACHIEVE.metricsComplete < 90) {
+        var cnt = 0;
         for (var i = 0; i < ACHIEVE.boardGameOver.length; i++) {
           for (var j = 0; j < ACHIEVE.boardGameOver[0].length; j++) {
             if (ACHIEVE.boardGameOver[i][j].roleid == 0) {
               for (var near of COMMON.nearEight(ACHIEVE.boardGameOver, i, j)) {
-                if (near && near.shown) res++;
+                if (near && near.shown) cnt++;
               }
-              if (res == 8) return "3-4";
+              if (cnt == 8) res.push("3-4");
               else {
-                res = 0;
+                cnt = 0;
                 for (var near of COMMON.nearFour(ACHIEVE.boardGameOver, i, j)) {
-                  if (near && near.shown) res++;
+                  if (near && near.shown) cnt++;
                 }
-                if (res > 0) return `3-${res - 1}`;
+                if (cnt > 0) res.push(`3-${cnt - 1}`);
               }
             }
           }
         }
       }
+      if (ACHIEVE.isKilled == true) res.push("3-5");
+      return res;
     },
   },
 ];
@@ -295,21 +326,23 @@ var myIdxOf = (arr, id) => {
   return -1;
 };
 function collectAwards(isSaveCookies) {
+  var cookieAwards = {};
+  if (isSaveCookies) {
+    cookieAwards = MyCookies.getObj("awards");
+  }
   for (var award of AWARDS) {
     if (award.checkFunc) {
-      var res = award.checkFunc();
-      res = myIdxOf(award.seriesAwards, res);
-      if (res >= 0) {
-        var getAward = award.seriesAwards[res];
-        collects.push(getAward);
-        if (isSaveCookies) {
-          var cookieAwards = MyCookies.getObj("awards");
+      for (var res of award.checkFunc()) {
+        res = myIdxOf(award.seriesAwards, res);
+        if (res >= 0) {
+          var getAward = award.seriesAwards[res];
+          collects.push(getAward);
           cookieAwards[getAward.id] = true;
-          MyCookies.setObj("awards", cookieAwards);
         }
       }
     }
   }
+  isSaveCookies && MyCookies.setObj("awards", cookieAwards);
   return collects;
 }
 export { collectAwards, ACHIEVE, ALLAWARDS, RANK };

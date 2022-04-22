@@ -1,5 +1,5 @@
-import * as COMMON from "../_common/common.js";
 import { copiesCheck } from "../copies/copies.js";
+import { ACHIEVE } from "../_common/award.js";
 function targetOnClick(e, context, i, j) {
   //[替身]
   if (copiesCheck(context, i, j)) {
@@ -18,6 +18,7 @@ function targetOnClick(e, context, i, j) {
   }
   context.isGameOver = 1;
   if (context.killers.length > 0) {
+    ACHIEVE.isKilled = true;
     context.boxArray[i][j].signs["killed"] = true;
     context.boxArray[i][j].infos["killed-notes"] = true;
 
