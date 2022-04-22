@@ -172,19 +172,19 @@ var AWARDS = [
       switch (win) {
         case true:
           if (complete <= 10) return "1-0";
-          else if (chances <= 20) return "1-1";
-          else if (chances <= 30) return "1-2";
-          else if (chances <= 40) return "1-3";
-          else if (chances <= 50) return "1-4";
-          else if (chances >= 80 && chances < 90) return "1-11";
-          else if (chances >= 90 && chances < 100) return "1-12";
-          else if (chances === 100) return "1-9";
+          else if (complete <= 20) return "1-1";
+          else if (complete <= 30) return "1-2";
+          else if (complete <= 40) return "1-3";
+          else if (complete <= 50) return "1-4";
+          else if (complete >= 80 && complete < 90) return "1-11";
+          else if (complete >= 90 && complete < 100) return "1-12";
+          else if (complete === 100) return "1-9";
         case false:
-          if (chances <= 10) return "1-5";
-          else if (chances <= 20) return "1-6";
-          else if (chances >= 80 && chances < 90) return "1-7";
-          else if (chances >= 90 && chances < 100) return "1-8";
-          else if (chances === 100) return "1-10";
+          if (complete <= 10) return "1-5";
+          else if (complete <= 20) return "1-6";
+          else if (complete >= 80 && complete < 90) return "1-7";
+          else if (complete >= 90 && complete < 100) return "1-8";
+          else if (complete === 100) return "1-10";
       }
     },
   },
@@ -211,7 +211,7 @@ function collectAwards(isSaveCookies) {
       res = myIdxOf(AWARDS[idx].seriesAwards, res);
       if (res >= 0) {
         var getAward = AWARDS[idx].seriesAwards[res];
-        collects.push(getAward);
+        collects.push(getAward.id);
         if (isSaveCookies) {
           var cookieAwards = MyCookies.getObj("awards");
           cookieAwards[getAward.id] = true;

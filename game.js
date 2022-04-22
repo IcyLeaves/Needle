@@ -325,6 +325,7 @@ var app = new Vue({
       ACHIEVE.metricsUsedChances = this.metrics[2];
       this.metrics[1] = this.chances;
       ACHIEVE.metricsRemainChances = this.chances;
+      this.metrics[0] = 0;
       for (var i = 0; i < ROWS; i++) {
         for (var j = 0; j < COLS; j++) {
           if (this.boxArray[i][j].shown) {
@@ -414,7 +415,9 @@ var app = new Vue({
           this.gifStatus = load.gifStatus;
           this.renderLatestBoard();
           this.refreshAllSigns();
-
+          //调试成就
+          // this.calculateMetrics();
+          // collectAwards(true);
           return true;
         }
       }
