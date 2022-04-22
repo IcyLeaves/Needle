@@ -201,6 +201,7 @@ var app = new Vue({
         if (!jj) jj = e.currentTarget.j;
         //减少一次猜测次数
         if (!that[ii][jj].shown && this.chances > 0) {
+          if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
           //[志愿者]
           volunteerCheck(app, that[ii][jj]);
           this.chances--;
@@ -280,6 +281,7 @@ var app = new Vue({
       this.drawCanvas(true);
       setTimeout(() => {
         this.calculateMetrics();
+        ACHIEVE.boardGameOver = this.boxArray;
         this.awards = collectAwards(this.checkContest());
         this.showRank = true;
         this.checkContest() && this.saveCookies();

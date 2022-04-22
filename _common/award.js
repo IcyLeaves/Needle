@@ -1,4 +1,5 @@
 import * as MyCookies from "./cookie.js";
+import * as COMMON from "./common.js";
 var RANK = {
   FREE: "#999999",
   COMMON: "#7DAF0A",
@@ -13,7 +14,10 @@ var ACHIEVE = {
   metricsComplete: "0%", //完成度
   metricsRemainChances: 0, //剩余机会
   metricsUsedChances: 0, //调查次数
+  cntChancesIsOne: 0, //线索为1的次数
+  boardGameOver: undefined, //游戏结束时的地图
 };
+
 var AWARDS = [
   {
     seriesName: "剩余线索",
@@ -143,7 +147,7 @@ var AWARDS = [
       },
       {
         id: "1-9",
-        title: "骚扰狂",
+        title: "万人迷",
         color: RANK.EPIC,
         note: "完成度为100%的情况下成功",
       },
@@ -161,7 +165,7 @@ var AWARDS = [
       },
       {
         id: "1-12",
-        title: "素不相识",
+        title: "蓦然回首",
         color: RANK.RARE,
         note: "完成度至少90%的情况下成功",
       },
@@ -188,6 +192,92 @@ var AWARDS = [
       }
     },
   },
+  {
+    seriesName: "技巧",
+    seriesAwards: [
+      {
+        id: "2-0",
+        title: "坚持不懈",
+        color: RANK.COMMON,
+        note: "至少出现3次剩余线索为1的情况，最后获胜",
+      },
+      {
+        id: "2-1",
+        title: "穷追不舍",
+        color: RANK.UNCOMMON,
+        note: "至少出现7次剩余线索为1的情况，最后获胜",
+      },
+      {
+        id: "2-2",
+        title: "苟延残喘",
+        color: RANK.RARE,
+        note: "至少出现10次剩余线索为1的情况，最后获胜",
+      },
+    ],
+    checkFunc: () => {
+      var times = ACHIEVE.cntChancesIsOne;
+      if (times >= 10) return "2-2";
+      else if (times >= 7) return "2-1";
+      else if (times >= 3) return "2-0";
+    },
+  },
+  {
+    seriesName: "意外",
+    seriesAwards: [
+      {
+        id: "3-0",
+        title: "擦肩而过",
+        color: RANK.FREE,
+        note: "失败且完成度<90%时，与目标相邻的角色至少有1个已经现身",
+      },
+      {
+        id: "3-1",
+        title: "近在眼前",
+        color: RANK.COMMON,
+        note: "失败且完成度<90%时，与目标相邻的角色至少有2个已经现身",
+      },
+      {
+        id: "3-2",
+        title: "素不相识",
+        color: RANK.UNCOMMON,
+        note: "失败且完成度<90%时，与目标相邻的角色至少有3个已经现身",
+      },
+      {
+        id: "3-3",
+        title: "熟视无睹",
+        color: RANK.RARE,
+        note: "失败且完成度<90%时，与目标相邻的角色有4个且已经全部现身",
+      },
+      {
+        id: "3-4",
+        title: "最后的拼图",
+        color: RANK.EPIC,
+        note: "失败且完成度<90%时，在目标周围的角色有8个且已经全部现身",
+      },
+    ],
+    checkFunc: () => {
+      if (ACHIEVE.gameIsWin == false) {
+        var res = 0;
+        for (var i = 0; i < ACHIEVE.boardGameOver.length; i++) {
+          for (var j = 0; j < ACHIEVE.boardGameOver[0].length; j++) {
+            if (ACHIEVE.boardGameOver[i][j].roleid == 0) {
+              for (var near of COMMON.nearEight(ACHIEVE.boardGameOver, i, j)) {
+                if (near && near.shown) res++;
+              }
+              if (res == 8) return "3-4";
+              else {
+                res = 0;
+                for (var near of COMMON.nearFour(ACHIEVE.boardGameOver, i, j)) {
+                  if (near && near.shown) res++;
+                }
+                if (res > 0) return `3-${res - 1}`;
+              }
+            }
+          }
+        }
+      }
+    },
+  },
 ];
 var ALLAWARDS = AWARDS.map((series) => {
   var res = {};
@@ -205,12 +295,12 @@ var myIdxOf = (arr, id) => {
   return -1;
 };
 function collectAwards(isSaveCookies) {
-  for (var idx in AWARDS) {
-    if (AWARDS[idx].checkFunc) {
-      var res = AWARDS[idx].checkFunc();
-      res = myIdxOf(AWARDS[idx].seriesAwards, res);
+  for (var award of AWARDS) {
+    if (award.checkFunc) {
+      var res = award.checkFunc();
+      res = myIdxOf(award.seriesAwards, res);
       if (res >= 0) {
-        var getAward = AWARDS[idx].seriesAwards[res];
+        var getAward = award.seriesAwards[res];
         collects.push(getAward);
         if (isSaveCookies) {
           var cookieAwards = MyCookies.getObj("awards");
