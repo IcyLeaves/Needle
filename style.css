@@ -13,8 +13,8 @@
   display: flex;
   flex-direction: column;
 }
-.row-line {
-  border-bottom: gray 1px solid;
+.el-divider {
+  margin: 6px 0;
 }
 .el-row {
   padding: 10px 0;

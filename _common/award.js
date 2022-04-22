@@ -211,7 +211,7 @@ function collectAwards(isSaveCookies) {
       res = myIdxOf(AWARDS[idx].seriesAwards, res);
       if (res >= 0) {
         var getAward = AWARDS[idx].seriesAwards[res];
-        collects.push(getAward.id);
+        collects.push(getAward);
         if (isSaveCookies) {
           var cookieAwards = MyCookies.getObj("awards");
           cookieAwards[getAward.id] = true;

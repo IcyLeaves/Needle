@@ -124,12 +124,13 @@
           </div>
         </transition>
         <el-main>
-          <el-row type="flex" class="row-line">
+          <el-row type="flex">
             <el-col :span="4">
               <el-button
                 type="info"
                 icon="el-icon-collection"
                 @click="clickAwards"
+                style="float: right"
               >
               </el-button>
             </el-col>
@@ -146,12 +147,13 @@
               </el-button>
             </el-col>
           </el-row>
+          <el-divider></el-divider>
           <el-row type="flex">
             <el-col :span="12" :offset="6"
               ><div style="text-align: center">当前种子: {{seed}}</div></el-col
             >
           </el-row>
-          <el-row type="flex" :gutter="20" class="row-line">
+          <el-row type="flex" :gutter="20">
             <el-col :span="4" :offset="6" class="col-center flex-col">
               <el-tooltip content="随机生成一局独一无二的地图" placement="top">
                 <el-button
@@ -196,6 +198,7 @@
               </div></el-col
             >
           </el-row>
+          <el-divider></el-divider>
           <el-row type="flex">
             <el-col
               :span="isMobile?12:6"
