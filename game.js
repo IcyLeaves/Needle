@@ -79,6 +79,7 @@ var app = new Vue({
     isMobile: false,
     showRank: false,
     showAwards: false,
+    allAwardsIdx: 0,
     gifStatus: -2,
     //全局数据
     seed: 0,
@@ -157,10 +158,10 @@ var app = new Vue({
           //决定格子的职业
           let roleid = COMMON.withdraw(this.decks);
           box.roleid = roleid;
-          if (roleid != 1) {
-            if (roleid == 0) console.warn(notes[roleid], i, j);
-            else console.log(notes[roleid], i, j);
-          }
+          // if (roleid != 1) {
+          //   if (roleid == 0) console.warn(notes[roleid], i, j);
+          //   else console.log(notes[roleid], i, j);
+          // }
 
           if (roleid == 9) this.copiesTeam.push(COMMON.setPair(i, j));
           // 点击事件
@@ -442,7 +443,7 @@ var app = new Vue({
       this.showAwards = true;
     },
     whenAwardsCarouselChange(e) {
-      console.log(e);
+      this.allAwardsIdx = e;
     },
     setAwardClass(i, j) {
       var res = ["modal-tag", "over"];

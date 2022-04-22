@@ -6,6 +6,9 @@
 .el-main {
   padding: 10px;
 }
+.el-carousel__indicators button {
+  background-color: darkgrey;
+}
 .flex-col {
   display: flex;
   flex-direction: column;
