@@ -1,5 +1,6 @@
 import * as COMMON from "./_common/common.js";
-import { collectAwards, ACHIEVE } from "./_common/award.js";
+import { collectAwards, ACHIEVE, ALLAWARDS } from "./_common/award.js";
+import * as MyCookies from "./_common/cookie.js";
 //UPDATE HERE
 import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
@@ -77,6 +78,7 @@ var app = new Vue({
     //全局UI
     isMobile: false,
     showRank: false,
+    showAwards: false,
     gifStatus: -2,
     //全局数据
     seed: 0,
@@ -95,6 +97,7 @@ var app = new Vue({
       调查次数: 0,
     },
     awards: [],
+    allAwards: ALLAWARDS,
     //[疯子]
     isLastDark: false,
     //[杀手]
@@ -411,7 +414,10 @@ var app = new Vue({
       window.location.href = "/?seed=" + this.customSeed;
     },
     clickOverlay(e) {
-      if (e.target.className == "modal-overlay") this.showRank = false;
+      if (e.target.className == "modal-overlay") {
+        this.showRank = false;
+        this.showAwards = false;
+      }
     },
     clickMetrics(e) {
       this.showRank = true;
@@ -431,6 +437,20 @@ var app = new Vue({
           this.gifURL = response.data;
           this.gifStatus = 1;
         });
+    },
+    clickAwards(e) {
+      this.showAwards = true;
+    },
+    whenAwardsCarouselChange(e) {
+      console.log(e);
+    },
+    setAwardClass(i, j) {
+      var res = ["modal-tag", "over"];
+      var award = MyCookies.getObj("awards");
+      if (award[COMMON.setPair(i, j)]) {
+        res.pop();
+      }
+      return res;
     },
   },
   mounted: function () {

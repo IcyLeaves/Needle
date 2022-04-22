@@ -98,6 +98,10 @@
   cursor: default;
   margin: 5px;
 }
+.modal-award {
+  width: 100%;
+  display: block;
+}
 .rowspan {
   margin-right: 20px;
 }
