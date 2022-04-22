@@ -1,0 +1,17 @@
+.reporter-signs {
+  font-family: consolas;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  color: white;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: 900;
+  border: 2px solid white;
+}
+.reporter {
+  background-color: #0288d1;
+}

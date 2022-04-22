@@ -12,10 +12,11 @@ import { killerOnClick, killerCountDown } from "./killer/killer.js";
 import { augurOnClick, augurInit } from "./augur/augur.js";
 import { volunteerOnClick, volunteerCheck } from "./volunteer/volunteer.js";
 import { copiesOnClick } from "./copies/copies.js";
+import { reporterOnClick } from "./reporter/reporter.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 24, 15, 5, 3, 5, 3, 3, 3, 2]; //UPDATE HERE
+const NUMCONFIG = [1, 21, 15, 5, 3, 5, 3, 3, 3, 2, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -27,6 +28,7 @@ let randomPeople = [
   augurOnClick,
   volunteerOnClick,
   copiesOnClick,
+  reporterOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -39,6 +41,7 @@ let notes = [
   "augur",
   "volunteer",
   "copies",
+  "reporter",
 ]; //UPDATE HERE
 // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
 const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
@@ -103,7 +106,7 @@ var app = new Vue({
     currKillerTimer: 2,
     //[占卜师]
     augurDecks: [],
-    SUNS: [0, 1, 2, 5, 7, 8], //UPDATE HERE
+    SUNS: [0, 1, 2, 5, 7, 8, 10], //UPDATE HERE
     MOONS: [3, 4, 6, 9], //UPDATE HERE
     //[替身]
     copiesArrow: ["↖️", "⬆️", "↗️", "⬅️", "", "➡️", "↙️", "⬇️", "↘️"],
@@ -169,7 +172,7 @@ var app = new Vue({
           }
           // 孩子节点
           {
-            var signDiv = `<div id='sign-${i}-${j}' style='display:flex;align-items:center;justify-content:center;'></div>`;
+            var signDiv = `<div id='sign-${i}-${j}' class='sign-box'></div>`;
             box.innerHTML += signDiv;
           }
           //信息展示事件
