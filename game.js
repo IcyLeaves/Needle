@@ -1,5 +1,5 @@
 import * as COMMON from "./_common/common.js";
-import { collectAwards, ACHIEVE, ALLAWARDS } from "./_common/award.js";
+import { collectAwards, ACHIEVE, ALLAWARDS, RANK } from "./_common/award.js";
 import * as MyCookies from "./_common/cookie.js";
 //UPDATE HERE
 import { targetOnClick } from "./target/target.js";
@@ -311,6 +311,9 @@ var app = new Vue({
           metrics: this.metrics,
           awards: this.awards,
           isGameOver: this.isGameOver,
+          gifURL: this.gifURL,
+          gifStatus: this.gifStatus,
+          seed: this.seed,
         });
 
         return true;
@@ -399,15 +402,21 @@ var app = new Vue({
     },
     loadCookies() {
       var load = MyCookies.getObj("contest-data");
-      if (this.checkContest() && load.boxArray) {
-        this.boxArray = load.boxArray;
-        this.chances = load.chances;
-        this.metrics = load.metrics;
-        this.awards = load.awards;
-        this.isGameOver = load.isGameOver;
-        this.renderLatestBoard();
-        this.refreshAllSigns();
-        return true;
+      if (this.checkContest()) {
+        if (load.seed != this.seed) return false;
+        if (load.boxArray) {
+          this.boxArray = load.boxArray;
+          this.chances = load.chances;
+          this.metrics = load.metrics;
+          this.awards = load.awards;
+          this.isGameOver = load.isGameOver;
+          this.gifURL = load.gifURL;
+          this.gifStatus = load.gifStatus;
+          this.renderLatestBoard();
+          this.refreshAllSigns();
+
+          return true;
+        }
       }
       return false;
     },
@@ -482,6 +491,9 @@ var app = new Vue({
       var award = MyCookies.getObj("awards");
       if (award[COMMON.setPair(i, j)]) {
         res.pop();
+      }
+      if (ALLAWARDS[i].awards[j].color === RANK.LEGEND) {
+        res.push("legend");
       }
       return res;
     },

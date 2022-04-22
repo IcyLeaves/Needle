@@ -113,7 +113,6 @@
                           :class="setAwardClass(i,j)"
                           :color="val.color"
                           type="dark"
-                          style="border: none"
                           >{{val.title}}</el-tag
                         >
                       </el-tooltip>
@@ -166,7 +165,7 @@
             </el-col>
             <el-col :span="4" class="col-center flex-col">
               <el-tooltip
-                content="地图和他人相同，每一小时更新一次"
+                content="地图和他人相同，每一小时更新一次，可以收集成就"
                 placement="top"
               >
                 <el-button

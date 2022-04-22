@@ -1,11 +1,11 @@
 import * as MyCookies from "./cookie.js";
 var RANK = {
   FREE: "#999999",
-  COMMON: "#598933",
-  UNCOMMON: "#29B1FD",
-  RARE: "#646CFD",
-  EPIC: "#6B4C8D",
-  LEGEND: "#FE7225",
+  COMMON: "#7DAF0A",
+  UNCOMMON: "#1E90FF",
+  RARE: "#7D00FF",
+  EPIC: "#DB3913",
+  LEGEND: "#00000000",
   SPECIAL: "#DD52CF",
 };
 var ACHIEVE = {
@@ -222,4 +222,4 @@ function collectAwards(isSaveCookies) {
   }
   return collects;
 }
-export { collectAwards, ACHIEVE, ALLAWARDS };
+export { collectAwards, ACHIEVE, ALLAWARDS, RANK };
