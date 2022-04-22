@@ -1,9 +1,9 @@
 function getObj(name) {
-  var str = Cookies.get(name);
+  var str = localStorage.getItem(name);
   if (str === "" || str === "{}" || !str) return {};
   return JSON.parse(str);
 }
 function setObj(name, obj) {
-  Cookies.set(name, JSON.stringify(obj), { expires: 77777 });
+  localStorage.setItem(name, JSON.stringify(obj));
 }
 export { getObj, setObj };

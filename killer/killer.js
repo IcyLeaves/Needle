@@ -21,7 +21,7 @@ function killerCountDown(context) {
     } else {
       curr.signs[`killing${curr.killerTimer}`] = true;
       curr.infos[`killer-notes${curr.killerTimer}`] = true;
-      context.refreshSigns(curr);
+      context.refreshSigns(curr.i, curr.j);
       idx++;
     }
   }

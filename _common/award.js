@@ -204,7 +204,7 @@ var myIdxOf = (arr, id) => {
   }
   return -1;
 };
-function collectAwards() {
+function collectAwards(isSaveCookies) {
   for (var idx in AWARDS) {
     if (AWARDS[idx].checkFunc) {
       var res = AWARDS[idx].checkFunc();
@@ -212,9 +212,11 @@ function collectAwards() {
       if (res >= 0) {
         var getAward = AWARDS[idx].seriesAwards[res];
         collects.push(getAward);
-        var cookieAwards = MyCookies.getObj("awards");
-        cookieAwards[getAward.id] = true;
-        MyCookies.setObj("awards", cookieAwards);
+        if (isSaveCookies) {
+          var cookieAwards = MyCookies.getObj("awards");
+          cookieAwards[getAward.id] = true;
+          MyCookies.setObj("awards", cookieAwards);
+        }
       }
     }
   }

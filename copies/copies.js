@@ -26,8 +26,8 @@ function copiesCheck(context, i, j) {
     var b = context.boxArray[x][y]; //原来保镖的位置
     //身份下标需要交换
     [a.roleid, b.roleid] = [b.roleid, a.roleid];
-    //点击函数需要交换
-    [a.onclick, b.onclick] = [b.onclick, a.onclick];
+    // //点击函数需要交换
+    // [a.onclick, b.onclick] = [b.onclick, a.onclick];
     //打上标记
     var idx = getIdx(i, j, x, y);
     context.boxArray[i][j].copiesDir = idx;

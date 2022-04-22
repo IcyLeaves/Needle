@@ -85,18 +85,14 @@ var app = new Vue({
     seed: 0,
     customSeed: "",
     chances: 16,
-    infos: [],
     decks: [],
     boxArray: [],
     isGameOver: -1,
     gifData: 0,
     gifURL: "",
     //统计指标
-    metrics: {
-      完成度: 0,
-      剩余线索: 0,
-      调查次数: 0,
-    },
+    metrics: [0, 0, 0],
+    metricsMap: ["完成度", "剩余线索", "调查次数"],
     awards: [],
     allAwards: ALLAWARDS,
     //[疯子]
@@ -122,6 +118,7 @@ var app = new Vue({
       this.initBoard();
       this.augurDecks = augurInit(ROWS, COLS);
       this.drawCanvas();
+      this.loadCookies();
     },
     initDeck() {
       //生成洗牌数组
@@ -146,18 +143,20 @@ var app = new Vue({
         let row = document.createElement("div");
         row.className = "letter-row";
         let boxRow = [];
+        let boxDataRow = [];
         for (let j = 0; j < COLS; j++) {
           let box = document.createElement("div");
+          let boxData = {};
           box.i = i;
           box.j = j;
-          box.infos = {};
-          box.signs = {};
+          boxData.i = i;
+          boxData.j = j;
+          boxData.infos = {};
+          boxData.signs = {};
           box.className = "letter-box";
-          // box.setAttribute("data-i", i);
-          // box.setAttribute("data-j", j);
           //决定格子的职业
           let roleid = COMMON.withdraw(this.decks);
-          box.roleid = roleid;
+          boxData.roleid = roleid;
           // if (roleid != 1) {
           //   if (roleid == 0) console.warn(notes[roleid], i, j);
           //   else console.log(notes[roleid], i, j);
@@ -172,33 +171,11 @@ var app = new Vue({
           {
             var signDiv = `<div id='sign-${i}-${j}' style='display:flex;align-items:center;justify-content:center;'></div>`;
             box.innerHTML += signDiv;
-            //悬浮框
-            // {
-            //   var notesName = notes[roleid];
-            //   let roleContent = document
-            //     .getElementById(notesName)
-            //     .cloneNode(true);
-            //   roleContent.setAttribute("id", `${notesName}-${i}-${j}`);
-            //   box.appendChild(roleContent);
-            // }
-            //干扰标志
-            // {
-            //   let jamSign = document.getElementById("jam-sign").cloneNode(true);
-            //   box.appendChild(jamSign);
-            // }
-            // //干扰说明
-            // {
-            //   let jamNotes = document
-            //     .getElementById("jam-notes")
-            //     .cloneNode(true);
-            //   box.appendChild(jamNotes);
-            // }
           }
           //信息展示事件
           {
             box.onmouseenter = () => {
-              this.currKillerTimer = box.killerTimer;
-              this.refreshInfos(box);
+              this.refreshInfos(box.i, box.j);
             };
             box.onmouseleave = () => {
               this.clearInfo();
@@ -206,10 +183,11 @@ var app = new Vue({
           }
           row.appendChild(box);
           boxRow.push(box);
+          boxDataRow.push(boxData);
         }
 
         board.appendChild(row);
-        this.boxArray.push(boxRow);
+        this.boxArray.push(boxDataRow);
       }
     },
     //主逻辑
@@ -223,7 +201,7 @@ var app = new Vue({
           //[志愿者]
           volunteerCheck(app, that[ii][jj]);
           this.chances--;
-          this.metrics["调查次数"]++;
+          this.metrics[2]++;
 
           killerCountDown(app); //[杀手]
           //[干扰者]
@@ -241,7 +219,7 @@ var app = new Vue({
             delete that[ii][jj].signs["jammed"];
             delete that[ii][jj].infos["jam-notes"];
           }
-          this.refreshInfos(that[ii][jj]);
+          this.refreshInfos(ii, jj);
           this.refreshAllSigns();
           this.drawCanvas();
         }
@@ -249,6 +227,7 @@ var app = new Vue({
         if (this.isGameOver != -1) {
           this.gameover();
         }
+        this.checkContest() && this.saveCookies();
       }
     },
     drawCanvas(isLast) {
@@ -298,14 +277,16 @@ var app = new Vue({
       this.drawCanvas(true);
       setTimeout(() => {
         this.calculateMetrics();
-        this.awards = collectAwards();
+        this.awards = collectAwards(this.checkContest());
         this.showRank = true;
+        this.checkContest() && this.saveCookies();
       }, 1000);
     },
     renderOverBoard() {
       for (var i = 0; i < ROWS; i++) {
         for (var j = 0; j < COLS; j++) {
           if (!this.boxArray[i][j].shown) {
+            this.boxArray[i][j].shown = false;
             var box =
               document.getElementById("game-board").children[i].children[j];
             box.classList.add(notes[this.boxArray[i][j].roleid]);
@@ -314,21 +295,43 @@ var app = new Vue({
         }
       }
     },
+    checkContest() {
+      var d = new Date();
+      var contestSeed = Math.log(Math.floor(d.getTime() / (1000 * 60 * 60)));
+      if (this.seed == contestSeed) {
+        return true;
+      }
+      return false;
+    },
+    saveCookies() {
+      if (this.checkContest()) {
+        MyCookies.setObj("contest-data", {
+          boxArray: this.boxArray,
+          chances: this.chances,
+          metrics: this.metrics,
+          awards: this.awards,
+          isGameOver: this.isGameOver,
+        });
+
+        return true;
+      }
+      return false;
+    },
     calculateMetrics() {
       ACHIEVE.gameIsWin = this.isGameOver == 1;
-      ACHIEVE.metricsUsedChances = this.metrics["调查次数"];
-      this.metrics["剩余线索"] = this.chances;
+      ACHIEVE.metricsUsedChances = this.metrics[2];
+      this.metrics[1] = this.chances;
       ACHIEVE.metricsRemainChances = this.chances;
       for (var i = 0; i < ROWS; i++) {
         for (var j = 0; j < COLS; j++) {
           if (this.boxArray[i][j].shown) {
-            this.metrics["完成度"]++;
+            this.metrics[0]++;
           }
         }
       }
-      var percent = Math.floor((this.metrics["完成度"] * 100) / ROWS / COLS);
+      var percent = Math.floor((this.metrics[0] * 100) / ROWS / COLS);
       ACHIEVE.metricsComplete = percent;
-      this.metrics["完成度"] = percent + "%";
+      this.metrics[0] = percent + "%";
     },
     //UI帧更新
     clearInfo() {
@@ -342,35 +345,35 @@ var app = new Vue({
       var infos = document.getElementById("infos");
       infos.appendChild(roleDiv);
     },
-    refreshInfos(box) {
+    refreshInfos(i, j) {
       this.clearInfo();
-      for (var key in box.infos) {
+      for (var key in this.boxArray[i][j].infos) {
         this.addInfo(key);
       }
     },
     refreshAllSigns() {
       for (var boxRow of this.boxArray) {
         for (var box of boxRow) {
-          this.refreshSigns(box);
+          this.refreshSigns(box.i, box.j);
         }
       }
     },
-    deleteSign(box) {
-      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
+    deleteSign(i, j) {
+      var signDiv = document.getElementById(`sign-${i}-${j}`);
       signDiv.innerHTML = "";
     },
-    addSign(key, box) {
-      var signDiv = document.getElementById(`sign-${box.i}-${box.j}`);
+    addSign(key, i, j) {
+      var signDiv = document.getElementById(`sign-${i}-${j}`);
       var sign = document.getElementById(key).cloneNode(true);
       signDiv.appendChild(sign);
     },
-    refreshSigns(box) {
-      this.deleteSign(box);
-      for (var key in box.signs) {
-        this.addSign(key, box);
+    refreshSigns(i, j) {
+      this.deleteSign(i, j);
+      for (var key in this.boxArray[i][j].signs) {
+        this.addSign(key, i, j);
       }
     },
-    //
+    //init
     listenWindowResize() {
       var that = this;
       const getWindowInfo = () => {
@@ -393,6 +396,35 @@ var app = new Vue({
         this.clickContest();
       }
       return params.seed;
+    },
+    loadCookies() {
+      var load = MyCookies.getObj("contest-data");
+      if (this.checkContest() && load.boxArray) {
+        this.boxArray = load.boxArray;
+        this.chances = load.chances;
+        this.metrics = load.metrics;
+        this.awards = load.awards;
+        this.isGameOver = load.isGameOver;
+        this.renderLatestBoard();
+        this.refreshAllSigns();
+        return true;
+      }
+      return false;
+    },
+    renderLatestBoard() {
+      for (var i = 0; i < ROWS; i++) {
+        for (var j = 0; j < COLS; j++) {
+          var box =
+            document.getElementById("game-board").children[i].children[j];
+          if (
+            this.boxArray[i][j].shown === true ||
+            this.boxArray[i][j].shown === false
+          ) {
+            box.classList.add(notes[this.boxArray[i][j].roleid]);
+          }
+          if (this.boxArray[i][j].shown === false) box.classList.add("over");
+        }
+      }
     },
     //html直接引用的事件
     createRandomSeed() {

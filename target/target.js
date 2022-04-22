@@ -4,7 +4,7 @@ function targetOnClick(e, context, i, j) {
   //[替身]
   if (copiesCheck(context, i, j)) {
     context.chances++;
-    context.boxArray[i][j].onclick(e, context, i, j);
+    context.step(e, context, i, j);
     return;
   }
 
