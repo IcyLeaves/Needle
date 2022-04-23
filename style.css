@@ -9,6 +9,9 @@
 .el-carousel__indicators button {
   background-color: darkgrey;
 }
+.el-progress-bar {
+  width: 90%;
+}
 .flex-col {
   display: flex;
   flex-direction: column;
