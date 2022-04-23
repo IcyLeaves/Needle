@@ -85,9 +85,11 @@ var AWARDS = [
           else if (chances <= 20) res.push("0-3");
           else if (chances >= 40 && chances < 100) res.push("0-4");
           else if (chances >= 100) res.push("0-5");
+          break;
         case false:
           if (chances >= 100) res.push("0-7");
           else if (chances >= 20) res.push("0-6");
+          break;
       }
       return res;
     },
@@ -194,6 +196,7 @@ var AWARDS = [
           else if (complete >= 80 && complete < 90) res.push("1-11");
           else if (complete >= 90 && complete < 100) res.push("1-12");
           else if (complete === 100) res.push("1-9");
+          break;
         case false:
           if (complete === 0) res.push("1-13");
           else if (complete <= 10) res.push("1-5");
@@ -201,6 +204,7 @@ var AWARDS = [
           else if (complete >= 80 && complete < 90) res.push("1-7");
           else if (complete >= 90 && complete < 100) res.push("1-8");
           else if (complete === 100) res.push("1-10");
+          break;
       }
       return res;
     },

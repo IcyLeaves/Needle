@@ -420,6 +420,11 @@ var app = new Vue({
           this.gifStatus = load.gifStatus;
           this.renderLatestBoard();
           this.refreshAllSigns();
+          // let cookieAwards = MyCookies.getObj("awards");
+          // delete cookieAwards["0-6"];
+          // delete cookieAwards["0-7"];
+          // delete cookieAwards["1-10"];
+          // MyCookies.setObj("awards", cookieAwards);
           //调试成就
           // this.calculateMetrics();
           // collectAwards(true);
