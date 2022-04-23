@@ -43,6 +43,45 @@ let notes = [
   "copies",
   "reporter",
 ]; //UPDATE HERE
+let colors = [
+  "#66bb6a",
+  "#898989",
+  "#512da8",
+  "#81d4fa",
+  "#ef9a9a",
+  "#5d4037",
+  "#ffe082",
+  "#303F9F",
+  "#FBC02D",
+  "#80CBC4",
+  "#0288D1",
+]; //UPDATE HERE
+let names = [
+  "目标",
+  "市民",
+  "侦探",
+  "干扰者",
+  "疯子",
+  "警长",
+  "杀手",
+  "占卜师",
+  "志愿者",
+  "替身",
+  "记者",
+];
+var RECORDS = ((nums, infos, colors, names) => {
+  var res = [];
+  for (var idx in nums) {
+    res.push({
+      color: colors[idx],
+      allNum: nums[idx],
+      infoName: infos[idx],
+      showedNum: 0,
+      name: names[idx],
+    });
+  }
+  return res;
+})(NUMCONFIG, notes, colors, names);
 // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
 const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
   const byteCharacters = atob(b64Data);
@@ -93,6 +132,7 @@ var app = new Vue({
     isGameOver: -1,
     gifData: 0,
     gifURL: "",
+    records: RECORDS,
     //统计指标
     metrics: [0, 0, 0],
     metricsMap: ["完成度", "剩余线索", "调查次数"],
@@ -217,8 +257,10 @@ var app = new Vue({
             //[警长]
             sheriffCheck(app, that[ii][jj]);
             //开始执行效果
-            randomPeople[that[ii][jj].roleid](e, app, ii, jj);
-            that[ii][jj].shown = true;
+            if (!randomPeople[that[ii][jj].roleid](e, app, ii, jj)) {
+              that[ii][jj].shown = true;
+              this.records[that[ii][jj].roleid].showedNum++;
+            }
 
             delete that[ii][jj].signs["jammed"];
             delete that[ii][jj].infos["jam-notes"];
@@ -505,6 +547,20 @@ var app = new Vue({
         res.push("legend");
       }
       return res;
+    },
+    calRecordPercent(record) {
+      return Math.floor((record.showedNum / record.allNum) * 100);
+    },
+    formatRecordStatus(item) {
+      return (a) => {
+        return `${item.showedNum} / ${item.allNum}`;
+      };
+    },
+    mouseenterRecord(e) {
+      this.addInfo(e.infoName);
+    },
+    mouseleaveRecord(e) {
+      this.clearInfo();
     },
   },
   mounted: function () {

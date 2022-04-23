@@ -5,7 +5,7 @@ function targetOnClick(e, context, i, j) {
   if (copiesCheck(context, i, j)) {
     context.chances++;
     context.step(e, context, i, j);
-    return;
+    return true;
   }
 
   e.srcElement.classList.add("target");

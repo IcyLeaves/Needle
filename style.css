@@ -53,6 +53,10 @@
 .left-title {
   font-size: 20px;
 }
+.right-title {
+  text-align: center;
+  font-size: 20px;
+}
 #main-image {
   background-color: white;
 }

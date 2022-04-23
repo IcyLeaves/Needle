@@ -221,7 +221,32 @@
                 </div>
               </div>
             </el-col>
-            <el-col :span="isMobile?0:6"></el-col>
+            <el-col :span="isMobile?0:6" class="flex-col">
+              <b class="right-title">笔记</b>
+              <div id="records" style="padding: 20px">
+                <el-row
+                  v-for="(item,i) in records"
+                  :key="'records'+i"
+                  @mouseenter.native="mouseenterRecord(item)"
+                  @mouseleave.native="mouseleaveRecord(item)"
+                >
+                  <el-col :span="6"
+                    ><span
+                      ><font :color="item.color"
+                        ><b>{{item.name}}</b></font
+                      ></span
+                    ></el-col
+                  >
+                  <el-col :span="18"
+                    ><el-progress
+                      :percentage="calRecordPercent(item)"
+                      :format="formatRecordStatus(item)"
+                      :color="item.color"
+                    ></el-progress
+                  ></el-col>
+                </el-row>
+              </div>
+            </el-col>
           </el-row>
           <div style="display: none" id="show-image"></div>
           <image style="display: none" id="result-image"></image>
