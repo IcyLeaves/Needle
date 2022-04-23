@@ -420,11 +420,7 @@ var app = new Vue({
           this.gifStatus = load.gifStatus;
           this.renderLatestBoard();
           this.refreshAllSigns();
-          // let cookieAwards = MyCookies.getObj("awards");
-          // delete cookieAwards["0-6"];
-          // delete cookieAwards["0-7"];
-          // delete cookieAwards["1-10"];
-          // MyCookies.setObj("awards", cookieAwards);
+
           //调试成就
           // this.calculateMetrics();
           // collectAwards(true);
@@ -499,13 +495,13 @@ var app = new Vue({
     whenAwardsCarouselChange(e) {
       this.allAwardsIdx = e;
     },
-    setAwardClass(i, j) {
+    setAwardClass(item) {
       var res = ["modal-tag", "over"];
       var award = MyCookies.getObj("awards");
-      if (award[COMMON.setPair(i, j)]) {
+      if (award[item.id]) {
         res.pop();
       }
-      if (ALLAWARDS[i].awards[j].color === RANK.LEGEND) {
+      if (item.color === RANK.LEGEND) {
         res.push("legend");
       }
       return res;

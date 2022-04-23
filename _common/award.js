@@ -72,6 +72,12 @@ var AWARDS = [
         color: RANK.RARE,
         note: "剩余线索至少100个的情况下失败",
       },
+      {
+        id: "0-8",
+        title: "大数据",
+        color: RANK.EPIC,
+        note: "剩余线索至少200个的情况下获胜",
+      },
     ],
     checkFunc: () => {
       var res = [];
@@ -84,7 +90,8 @@ var AWARDS = [
           else if (chances <= 10) res.push("0-2");
           else if (chances <= 20) res.push("0-3");
           else if (chances >= 40 && chances < 100) res.push("0-4");
-          else if (chances >= 100) res.push("0-5");
+          else if (chances >= 100 && chances < 200) res.push("0-5");
+          else if (chances >= 200) res.push("0-8");
           break;
         case false:
           if (chances >= 100) res.push("0-7");
@@ -175,12 +182,12 @@ var AWARDS = [
         color: RANK.RARE,
         note: "完成度至少90%的情况下成功",
       },
-      {
-        id: "1-13",
-        title: "输在起跑线",
-        color: RANK.LEGEND,
-        note: "完成度为0%的情况下失败",
-      },
+      // {
+      //   id: "1-13",
+      //   title: "输在起跑线",
+      //   color: RANK.LEGEND,
+      //   note: "完成度为0%的情况下失败",
+      // },
     ],
     checkFunc: () => {
       var res = [];
@@ -234,16 +241,19 @@ var AWARDS = [
         id: "2-3",
         title: "坏心办好事",
         color: RANK.RARE,
-        note: "【疯子】的效果增多了你的线索",
+        note: "【疯子】的效果拯救了你",
       },
     ],
     checkFunc: () => {
       var res = [];
       var times = ACHIEVE.cntChancesIsOne;
-      if (times >= 10) res.push("2-2");
-      else if (times >= 7) res.push("2-1");
-      else if (times >= 3) res.push("2-0");
-      if (ACHIEVE.isAddChancesByCrazy == true) res.push("2-3");
+      if (ACHIEVE.gameIsWin == true) {
+        if (times >= 10) res.push("2-2");
+        else if (times >= 7) res.push("2-1");
+        else if (times >= 3) res.push("2-0");
+        if (ACHIEVE.isAddChancesByCrazy == true) res.push("2-3");
+      }
+
       return res;
     },
   },
@@ -312,6 +322,17 @@ var AWARDS = [
       if (ACHIEVE.isKilled == true) res.push("3-5");
       return res;
     },
+  },
+  {
+    seriesName: "特别感谢",
+    seriesAwards: [
+      {
+        id: "100-0",
+        title: "“泥斗”",
+        color: RANK.SPECIAL,
+        note: "感谢一位玩家在2022/04/23发现的成就系统巨大漏洞",
+      },
+    ],
   },
 ];
 var ALLAWARDS = AWARDS.map((series) => {

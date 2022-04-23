@@ -15,7 +15,8 @@ function sheriffOnClick(e, context, i, j) {
 function sheriffCheck(context, curr) {
   for (var near of COMMON.nearEight(context.boxArray, curr.i, curr.j)) {
     if (!near) continue;
-    near.sheriffRemain--;
+    if (near.roleid > 0 || (near.roleid == 0 && context.copiesTeam.length > 0))
+      near.sheriffRemain--;
     if (near.sheriffRemain == 0 && near.shown == true) context.chances *= 2;
   }
 }
