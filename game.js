@@ -267,13 +267,13 @@ var app = new Vue({
             that[ii][jj].infos["jam-notes"] = true;
             this.isLastDark = false;
           } else {
-            //[警长]
-            sheriffCheck(app, that[ii][jj]);
             //[赏金猎人]
             fortuneTargetBonus(app, that[ii][jj]);
             //开始执行效果
             if (!randomPeople[that[ii][jj].roleid](e, app, ii, jj)) {
               that[ii][jj].shown = true;
+              //[警长]
+              sheriffCheck(app, that[ii][jj]);
               //[赏金猎人]
               fortuneCheck(app, that[ii][jj]);
               this.records[that[ii][jj].roleid].showedNum++;
@@ -549,6 +549,24 @@ var app = new Vue({
         })
         .then((response) => {
           this.gifURL = response.data;
+          // 创建元素用于复制
+          const aux = document.createElement("input");
+          // 获取复制内容
+          const content = response.data;
+          // 设置元素内容
+          aux.setAttribute("value", content);
+          // 将元素插入页面进行调用
+          document.body.appendChild(aux);
+          // 复制内容
+          aux.select();
+          // 将内容复制到剪贴板
+          document.execCommand("copy");
+          // 删除创建元素
+          document.body.removeChild(aux);
+          app.$message({
+            message: "动图链接已复制",
+            type: "success",
+          });
           this.gifStatus = 1;
         });
     },

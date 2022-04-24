@@ -80,7 +80,9 @@
                     >生成动图</el-button
                   >
                   <div v-show="gifStatus==0">动图生成中...</div>
-                  <div v-show="gifStatus==1">动图分享：{{gifURL}}</div>
+                  <div v-show="gifStatus==1">
+                    动图分享：<a :href="gifURL">{{gifURL}}</a>
+                  </div>
                 </el-col>
               </el-row>
             </div>
@@ -137,7 +139,7 @@
               </el-button>
             </el-col>
             <el-col :span="16" class="col-center">
-              <div class="big-title">Needle v2.3</div>
+              <div class="big-title">Needle v2.4</div>
             </el-col>
             <el-col :span="4">
               <el-button
