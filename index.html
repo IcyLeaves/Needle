@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="volunteer/volunteer.css" />
     <link rel="stylesheet" href="copies/copies.css" />
     <link rel="stylesheet" href="reporter/reporter.css" />
+    <link rel="stylesheet" href="fortune/fortune.css" />
   </head>
   <body>
     <div id="app" style="display: none">
@@ -447,6 +448,25 @@
             </div>
           </div>
         </div>
+        <div id="fortune" class="notes">
+          <div class="letter-box fortune"></div>
+          <div class="notes-right">
+            <div style="color: #e64a19" class="notes-title">赏金猎人</div>
+            <div class="notes-content">使一个还未现身的角色获得💰</div>
+          </div>
+        </div>
+
+        <div id="fortune-notes" class="notes">
+          <div class="letter-box">💰</div>
+          <div class="notes-right">
+            <div style="color: #e64a19" class="notes-title">
+              <i>这一份是给你的</i>
+            </div>
+            <div class="notes-content">
+              🔍+1。下一次调查额外得知周围8个角色的身份。
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 所有职业小标志 UPDATE HERE -->
       <div id="signs" style="display: none">
@@ -473,6 +493,7 @@
         >
           {{i}}
         </div>
+        <span id="fortune-signs">💰</span>
       </div>
     </div>
 

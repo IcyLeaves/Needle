@@ -13,10 +13,16 @@ import { augurOnClick, augurInit } from "./augur/augur.js";
 import { volunteerOnClick, volunteerCheck } from "./volunteer/volunteer.js";
 import { copiesOnClick } from "./copies/copies.js";
 import { reporterOnClick } from "./reporter/reporter.js";
+import {
+  fortuneOnClick,
+  fortuneTargetBonus,
+  fortuneOver,
+  fortuneCheck,
+} from "./fortune/fortune.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 21, 15, 5, 3, 5, 3, 3, 3, 2, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 18, 15, 5, 3, 5, 3, 3, 3, 2, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -29,6 +35,7 @@ let randomPeople = [
   volunteerOnClick,
   copiesOnClick,
   reporterOnClick,
+  fortuneOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -42,6 +49,7 @@ let notes = [
   "volunteer",
   "copies",
   "reporter",
+  "fortune",
 ]; //UPDATE HERE
 let colors = [
   "#66bb6a",
@@ -55,6 +63,7 @@ let colors = [
   "#FBC02D",
   "#80CBC4",
   "#0288D1",
+  "#E64A19",
 ]; //UPDATE HERE
 let names = [
   "目标",
@@ -68,6 +77,7 @@ let names = [
   "志愿者",
   "替身",
   "记者",
+  "赏金猎人",
 ];
 var RECORDS = ((nums, infos, colors, names) => {
   var res = [];
@@ -146,12 +156,14 @@ var app = new Vue({
     currKillerTimer: 2,
     //[占卜师]
     augurDecks: [],
-    SUNS: [0, 1, 2, 5, 7, 8, 10], //UPDATE HERE
+    SUNS: [0, 1, 2, 5, 7, 8, 10, 11], //UPDATE HERE
     MOONS: [3, 4, 6, 9], //UPDATE HERE
     //[替身]
     copiesArrow: ["↖️", "⬆️", "↗️", "⬅️", "", "➡️", "↙️", "⬇️", "↘️"],
     copiesTeam: [],
     copiesCurr: undefined,
+    //[赏金猎人]
+    fortuneBonusNow: false,
   },
   methods: {
     //游戏初始化
@@ -197,6 +209,7 @@ var app = new Vue({
           boxData.infos = {};
           boxData.signs = {};
           box.className = "letter-box";
+          box.setAttribute("id", `box-${i}-${j}`);
           //决定格子的职业
           let roleid = COMMON.withdraw(this.decks);
           boxData.roleid = roleid;
@@ -256,9 +269,13 @@ var app = new Vue({
           } else {
             //[警长]
             sheriffCheck(app, that[ii][jj]);
+            //[赏金猎人]
+            fortuneTargetBonus(app, that[ii][jj]);
             //开始执行效果
             if (!randomPeople[that[ii][jj].roleid](e, app, ii, jj)) {
               that[ii][jj].shown = true;
+              //[赏金猎人]
+              fortuneCheck(app, that[ii][jj]);
               this.records[that[ii][jj].roleid].showedNum++;
             }
 
@@ -338,9 +355,11 @@ var app = new Vue({
               document.getElementById("game-board").children[i].children[j];
             box.classList.add(notes[this.boxArray[i][j].roleid]);
             box.classList.add("over");
+            fortuneOver(app, i, j);
           }
         }
       }
+      this.refreshAllSigns();
     },
     checkContest() {
       var d = new Date();
@@ -462,7 +481,9 @@ var app = new Vue({
           this.gifStatus = load.gifStatus;
           this.renderLatestBoard();
           this.refreshAllSigns();
-
+          // var award = MyCookies.getObj("awards");
+          // award["2-3"] = true;
+          // MyCookies.setObj("awards", award);
           //调试成就
           // this.calculateMetrics();
           // collectAwards(true);

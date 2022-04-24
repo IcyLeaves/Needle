@@ -251,9 +251,8 @@ var AWARDS = [
         if (times >= 10) res.push("2-2");
         else if (times >= 7) res.push("2-1");
         else if (times >= 3) res.push("2-0");
-        if (ACHIEVE.isAddChancesByCrazy == true) res.push("2-3");
       }
-
+      if (ACHIEVE.isAddChancesByCrazy == true) res.push("2-3");
       return res;
     },
   },
