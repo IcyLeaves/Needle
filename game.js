@@ -355,6 +355,9 @@ var app = new Vue({
               document.getElementById("game-board").children[i].children[j];
             box.classList.add(notes[this.boxArray[i][j].roleid]);
             box.classList.add("over");
+            this.boxArray[i][j].infos[
+              this.records[this.boxArray[i][j].roleid].infoName
+            ] = true;
             fortuneOver(app, i, j);
           }
         }
@@ -380,6 +383,7 @@ var app = new Vue({
           gifURL: this.gifURL,
           gifStatus: this.gifStatus,
           seed: this.seed,
+          records: this.records,
         });
 
         return true;
@@ -479,6 +483,7 @@ var app = new Vue({
           this.isGameOver = load.isGameOver;
           this.gifURL = load.gifURL;
           this.gifStatus = load.gifStatus;
+          this.records = load.records;
           this.renderLatestBoard();
           this.refreshAllSigns();
           // var award = MyCookies.getObj("awards");
