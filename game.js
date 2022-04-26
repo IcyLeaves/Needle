@@ -158,6 +158,7 @@ var app = new Vue({
     showRank: false,
     showAwards: false,
     showHelp: false,
+    enterGameMode: false,
     allAwardsIdx: 0,
     gifStatus: -2,
     keywordsShow: {},
@@ -651,14 +652,16 @@ var app = new Vue({
       this.clearInfo();
     },
     mouseenterGameMode(e) {
-      console.log("enter");
+      // console.log("enter");
+      this.enterGameMode = true;
       $("#game-mode").stop(true, true);
       $("#game-mode").animate({ opacity: 0 }, 400, "swing", () => {
         $("#game-mode").css("z-index", -5);
       });
     },
     mouseleaveGameMode(e) {
-      console.log("leave");
+      // console.log("leave");
+      this.enterGameMode = false;
       $("#game-mode").stop(true, true);
       $("#game-mode").css("z-index", 5);
       $("#game-mode").animate({ opacity: 1 }, 400);
@@ -672,6 +675,23 @@ var app = new Vue({
     this.initGame();
     var all = document.getElementById("app");
     all.style.cssText = "";
+
+    var minY = $("#game-mode").offset().top;
+    var minX = $("#game-mode").offset().left;
+    var maxY = minY + $("#game-mode").height();
+    var maxX = minX + $("#game-mode").width();
+    $(document).mousemove((e) => {
+      if (
+        e.pageX > minX &&
+        e.pageX < maxX &&
+        e.pageY > minY &&
+        e.pageY < maxY
+      ) {
+        !this.enterGameMode && this.mouseenterGameMode();
+      } else {
+        this.enterGameMode && this.mouseleaveGameMode();
+      }
+    });
   },
 });
 window.vue = app;
