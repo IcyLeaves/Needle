@@ -127,6 +127,39 @@
             </div>
           </div>
         </transition>
+        <transition name="el-fade-in-linear">
+          <div class="modal-overlay" v-show="showHelp" @click="clickOverlay">
+            <div class="modal-content">
+              <div class="modal-title">游戏说明</div>
+              <div style="text-align: center">
+                消耗一个🔍来得知一个格子的身份，同时触发对应的效果。</br>
+                给你有限的🔍，找出绿色的<span class="win">目标</span>即可获胜。</br>
+                如果没有🔍，则视为失败。
+              </div>
+              <!-- <div class="modal-title" style="font-size: 25px">百科</div>
+              <el-row
+                type="flex"
+                justify="center"
+                style="width: 100%; flex-wrap: wrap"
+              >
+                <el-tooltip content="指角色暴露出自己的身份" placement="top">
+                  <span>现身</span>
+                </el-tooltip>
+                <el-divider direction="vertical"></el-divider>
+                <el-tooltip content="耗费1个🔍，使角色【现身】" placement="top">
+                  <span>调查</span>
+                </el-tooltip>
+                <el-divider direction="vertical"></el-divider>
+                <el-tooltip
+                  content="不妨碍你任务的人。特征是技能说明以白色为背景"
+                  placement="top"
+                >
+                  <span>光明势力</span>
+                </el-tooltip>
+              </el-row> -->
+            </div>
+          </div>
+        </transition>
         <el-main>
           <el-row type="flex">
             <el-col :span="4">
@@ -135,6 +168,13 @@
                 icon="el-icon-collection"
                 @click="clickAwards"
                 style="float: right"
+              >
+              </el-button>
+              <el-button
+                type="info"
+                icon="el-icon-question"
+                @click="clickHelp"
+                style="float: right; margin: 0 20px"
               >
               </el-button>
             </el-col>
@@ -215,6 +255,14 @@
                 class="flex-col"
                 style="padding: 20px 0; align-items: center"
               ></div>
+              <div id="keywords" class="flex-col" style="padding: 20px 0; align-items: center">
+                <el-row v-show="keywordsShow['1']"><div><b>现身</b>：角色显示出自己的身份</div></el-row>
+                <el-row v-show="keywordsShow['2']"><div><b>调查</b>：耗费一个🔍使角色【现身】</div></el-row>
+                <el-row v-show="keywordsShow['3']"><div><b>光明势力</b>：技能说明背景为白色的角色</div></el-row>
+                <el-row v-show="keywordsShow['4']"><div><b>黑暗势力</b>：技能说明背景为黑色的角色</div></el-row>
+                <el-row v-show="keywordsShow['5']"><div><b>周围</b>：特指角色周围8格的区域</div></el-row>
+                <el-row v-show="keywordsShow['6']"><div><b>相邻</b>：特指角色相邻4格的区域</div></el-row>
+              </div>
             </el-col>
             <el-col :span="12" class="mid-border">
               <div class="col-center flex-col">
@@ -263,64 +311,64 @@
 
       <!-- 所有职业悬浮框说明 UPDATE HERE-->
       <div id="roles" style="display: none">
-        <div id="target" class="notes">
+        <div id="target" class="notes" data-keyword="">
           <div class="letter-box target"></div>
           <div class="notes-right">
             <div style="color: #66bb6a" class="notes-title">目标</div>
             <div class="notes-content">这就是你要找的人</div>
           </div>
         </div>
-        <div id="citizen" class="notes">
+        <div id="citizen" class="notes" data-keyword="">
           <div class="letter-box citizen"></div>
           <div class="notes-right">
             <div style="color: #898989" class="notes-title">市民</div>
             <div class="notes-content">没有任何效果</div>
           </div>
         </div>
-        <div id="detective" class="notes">
+        <div id="detective" class="notes" data-keyword="">
           <div class="letter-box detective"></div>
           <div class="notes-right">
             <div style="color: #512da8" class="notes-title">侦探</div>
             <div class="notes-content">🔍 + 2</div>
           </div>
         </div>
-        <div id="jam" class="notes bad">
+        <div id="jam" class="notes bad" data-keyword="1,2,6">
           <div class="letter-box jam"></div>
           <div class="notes-right">
             <div style="color: #81d4fa" class="notes-title">干扰者</div>
             <div class="notes-content">
-              <b>现身前</b>，相邻4格需要调查两次。
+              现身前，相邻角色需要调查两次。
             </div>
           </div>
         </div>
-        <div id="jam-notes" class="notes bad">
+        <div id="jam-notes" class="notes bad" data-keyword="2,6">
           <div class="letter-box">❓</div>
           <div class="notes-right">
             <div style="color: #81d4fa" class="notes-title">
               <i>你受到了干扰</i>
             </div>
             <div class="notes-content">
-              再调查一次吧！注意相邻四格至少有一个干扰者
+              再调查一次吧！注意相邻角色中至少有一个<span style="color:#81d4fa">干扰者</span>
             </div>
           </div>
         </div>
-        <div id="crazy" class="notes bad">
+        <div id="crazy" class="notes bad" data-keyword="1,2,4">
           <div class="letter-box crazy"></div>
           <div class="notes-right">
             <div style="color: #ef9a9a" class="notes-title">疯子</div>
             <div class="notes-content">
-              如果上一次调查使得一名邪恶势力现身，🔍变为1
+              如果上一次调查使得一黑暗势力现身，🔍变为1
             </div>
           </div>
         </div>
-        <div id="sheriff" class="notes">
+        <div id="sheriff" class="notes" data-keyword="1,5">
           <div class="letter-box sheriff"></div>
           <div class="notes-right">
             <div style="color: #5d4037" class="notes-title">警长</div>
-            <div class="notes-content">周围的格子都现身后，将现在的🔍翻倍</div>
+            <div class="notes-content">周围角色全部现身后，将现在的🔍翻倍</div>
           </div>
         </div>
-        <div id="killer" class="notes bad">
+        <div id="killer" class="notes bad" data-keyword="1,2">
           <div class="letter-box killer"></div>
           <div class="notes-right">
             <div style="color: #ffe082" class="notes-title">杀手</div>
@@ -330,7 +378,7 @@
             </div>
           </div>
         </div>
-        <div v-for="(item,i) in killerSigns" :key="i">
+        <div v-for="(item,i) in killerSigns" :key="i" data-keyword="1,2">
           <div v-bind:id="'killer-notes'+i" class="notes bad">
             <div class="letter-box">{{item}}</div>
             <div class="notes-right">
@@ -344,18 +392,18 @@
             </div>
           </div>
         </div>
-        <div id="killed-notes" class="notes bad">
+        <div id="killed-notes" class="notes bad" data-keyword="1,2">
           <div class="letter-box">💀</div>
           <div class="notes-right">
             <div style="color: #ffe082" class="notes-title">
               <i>目标死了，任务失败</i>
             </div>
             <div class="notes-content">
-              很遗憾，你帮杀手找到了<span class="win">目标</span>...
+              很遗憾，你帮<span style="color: #ffe082" >杀手</span>找到了<span class="win">目标</span>...
             </div>
           </div>
         </div>
-        <div id="augur" class="notes">
+        <div id="augur" class="notes" data-keyword="1">
           <div class="letter-box augur"></div>
           <div class="notes-right">
             <div style="color: #303f9f" class="notes-title">占卜师</div>
@@ -364,7 +412,7 @@
             </div>
           </div>
         </div>
-        <div id="augur-sun-notes" class="notes">
+        <div id="augur-sun-notes" class="notes" data-keyword="1,3">
           <div class="letter-box">☀️</div>
           <div class="notes-right">
             <div style="color: #303f9f" class="notes-title">
@@ -375,7 +423,7 @@
             </div>
           </div>
         </div>
-        <div id="augur-moon-notes" class="notes">
+        <div id="augur-moon-notes" class="notes" data-keyword="1,4">
           <div class="letter-box">🌑</div>
           <div class="notes-right">
             <div style="color: #303f9f" class="notes-title">
@@ -386,16 +434,16 @@
             </div>
           </div>
         </div>
-        <div id="volunteer" class="notes">
+        <div id="volunteer" class="notes" data-keyword="2,6">
           <div class="letter-box volunteer"></div>
           <div class="notes-right">
             <div style="color: #fbc02d" class="notes-title">志愿者</div>
             <div class="notes-content">
-              每当使用最后一个🔍在相邻的格子上调查时，🔍立刻+ 2
+              每当使用最后一个🔍对相邻角色调查时，🔍+ 2
             </div>
           </div>
         </div>
-        <div id="copies" class="notes bad">
+        <div id="copies" class="notes bad" data-keyword="1">
           <div class="letter-box copies"></div>
           <div class="notes-right">
             <div style="color: #80cbc4" class="notes-title">替身</div>
@@ -413,6 +461,7 @@
           :key="item"
           v-bind:id="'copies-notes-'+i"
           class="notes bad"
+          data-keyword=""
         >
           <div class="letter-box">{{item}}</div>
           <div class="notes-right">
@@ -420,16 +469,16 @@
               <i>这次又让他逃了</i>
             </div>
             <div class="notes-content">
-              替身保护了<span class="win">目标</span
+              <span style="color: #80cbc4" >替身</span>保护了<span class="win">目标</span
               >不被发现，但同样暴露了重要的线索！
             </div>
           </div>
         </div>
-        <div id="reporter" class="notes">
+        <div id="reporter" class="notes" data-keyword="1,3,5">
           <div class="letter-box reporter"></div>
           <div class="notes-right">
             <div style="color: #0288d1" class="notes-title">记者</div>
-            <div class="notes-content">现身时，得知周围光明势力的角色数量</div>
+            <div class="notes-content">现身时，得知周围角色中为光明势力的人数</div>
           </div>
         </div>
         <div
@@ -437,6 +486,7 @@
           :key="'reporter-notes-'+i"
           v-bind:id="'reporter-notes-'+i"
           class="notes"
+          data-keyword="3,5"
         >
           <div class="letter-box reporter">
             <div class="reporter-signs">{{i}}</div>
@@ -446,11 +496,11 @@
               <i>采访完毕</i>
             </div>
             <div class="notes-content">
-              “我周围的八格里有{{i}}个是光明势力的。”——前方记者报道
+              “在我周围有{{i}}个光明势力的角色。”——前方记者报道
             </div>
           </div>
         </div>
-        <div id="fortune" class="notes">
+        <div id="fortune" class="notes" data-keyword="1">
           <div class="letter-box fortune"></div>
           <div class="notes-right">
             <div style="color: #e64a19" class="notes-title">赏金猎人</div>
@@ -458,14 +508,14 @@
           </div>
         </div>
 
-        <div id="fortune-notes" class="notes">
+        <div id="fortune-notes" class="notes" data-keyword="2,5">
           <div class="letter-box">💰</div>
           <div class="notes-right">
             <div style="color: #e64a19" class="notes-title">
               <i>这一份是给你的</i>
             </div>
             <div class="notes-content">
-              🔍+1。下一次调查额外得知周围8个角色的身份。
+              🔍+1。下一次调查额外得知周围角色的身份。
             </div>
           </div>
         </div>

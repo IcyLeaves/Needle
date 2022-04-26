@@ -19,6 +19,10 @@
 .el-divider {
   margin: 6px 0;
 }
+.el-divider.el-divider--vertical {
+  margin: 0 8px;
+  height: 1.5em;
+}
 .el-row {
   padding: 10px 0;
 }

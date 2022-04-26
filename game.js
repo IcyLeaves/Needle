@@ -78,7 +78,33 @@ let names = [
   "替身",
   "记者",
   "赏金猎人",
-];
+]; //UPDATE HERE
+let keywords = {
+  1: {
+    name: "现身",
+    content: "角色显示出自己的身份",
+  },
+  2: {
+    name: "调查",
+    content: "耗费一个🔍。使角色【现身】",
+  },
+  3: {
+    name: "光明势力",
+    content: "技能说明背景为白色的角色",
+  },
+  4: {
+    name: "黑暗势力",
+    content: "技能说明背景为黑色的角色",
+  },
+  5: {
+    name: "周围",
+    content: "特指角色周围8格的区域",
+  },
+  6: {
+    name: "相邻",
+    content: "特指角色相邻4格的区域",
+  },
+};
 var RECORDS = ((nums, infos, colors, names) => {
   var res = [];
   for (var idx in nums) {
@@ -131,8 +157,10 @@ var app = new Vue({
     isMobile: false,
     showRank: false,
     showAwards: false,
+    showHelp: false,
     allAwardsIdx: 0,
     gifStatus: -2,
+    keywordsShow: {},
     //全局数据
     seed: 0,
     customSeed: "",
@@ -411,6 +439,8 @@ var app = new Vue({
     clearInfo() {
       var infos = document.getElementById("infos");
       infos.innerHTML = "";
+
+      this.keywordsShow = {};
     },
     addInfo(key) {
       var roleDiv = document.getElementById(key).cloneNode(true);
@@ -418,6 +448,9 @@ var app = new Vue({
 
       var infos = document.getElementById("infos");
       infos.appendChild(roleDiv);
+      for (var key of roleDiv.dataset.keyword.split(",")) {
+        this.keywordsShow[key] = true;
+      }
     },
     refreshInfos(i, j) {
       this.clearInfo();
@@ -536,6 +569,7 @@ var app = new Vue({
       if (e.target.className == "modal-overlay") {
         this.showRank = false;
         this.showAwards = false;
+        this.showHelp = false;
       }
     },
     clickMetrics(e) {
@@ -577,6 +611,9 @@ var app = new Vue({
     },
     clickAwards(e) {
       this.showAwards = true;
+    },
+    clickHelp(e) {
+      this.showHelp = true;
     },
     whenAwardsCarouselChange(e) {
       this.allAwardsIdx = e;
