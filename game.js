@@ -22,7 +22,7 @@ import {
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 18, 15, 5, 3, 5, 3, 3, 3, 2, 3, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 16, 15, 5, 3, 5, 3, 3, 3, 2, 5, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -629,6 +629,13 @@ var app = new Vue({
       }
       return res;
     },
+    setCurrAwardClass(item) {
+      var res = ["modal-tag"];
+      if (item.color === RANK.LEGEND) {
+        res.push("legend");
+      }
+      return res;
+    },
     calRecordPercent(record) {
       return Math.floor((record.showedNum / record.allNum) * 100);
     },
@@ -642,6 +649,19 @@ var app = new Vue({
     },
     mouseleaveRecord(e) {
       this.clearInfo();
+    },
+    mouseenterGameMode(e) {
+      console.log("enter");
+      $("#game-mode").stop(true, true);
+      $("#game-mode").animate({ opacity: 0 }, 400, "swing", () => {
+        $("#game-mode").css("z-index", -5);
+      });
+    },
+    mouseleaveGameMode(e) {
+      console.log("leave");
+      $("#game-mode").stop(true, true);
+      $("#game-mode").css("z-index", 5);
+      $("#game-mode").animate({ opacity: 1 }, 400);
     },
   },
   mounted: function () {

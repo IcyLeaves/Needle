@@ -22,7 +22,7 @@ function fortuneOnClick(e, context, i, j) {
 function fortuneTargetBonus(context, curr) {
   if (context.fortuneLastBonus == true) {
     context.fortuneLastBonus = false;
-    for (var near of COMMON.nearEight(context.boxArray, curr.i, curr.j)) {
+    for (var near of COMMON.nearFour(context.boxArray, curr.i, curr.j)) {
       if (!near || near.shown) continue;
       var e = document.getElementById(`box-${near.i}-${near.j}`);
       e.classList.add(context.records[near.roleid].infoName);

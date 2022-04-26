@@ -62,7 +62,7 @@
                   placement="top"
                 >
                   <el-tag
-                    class="modal-tag"
+                  :class="setCurrAwardClass(item)"
                     :color="item.color"
                     type="dark"
                     style="border: none"
@@ -192,9 +192,14 @@
             </el-col>
           </el-row>
           <el-divider></el-divider>
+        <div style="position:relative" @mouseenter="mouseenterGameMode" @mouseleave="mouseleaveGameMode">
+          <div class="game-mode" id="game-mode" >{{chances}}</div>
+          
           <el-row type="flex">
             <el-col :span="12" :offset="6"
-              ><div style="text-align: center">当前种子: {{seed}}</div></el-col
+              >
+              <div style="text-align: center">当前种子: {{seed}}</div>
+              </el-col
             >
           </el-row>
           <el-row type="flex" :gutter="20">
@@ -225,7 +230,7 @@
               </div></el-col
             >
             <el-col :span="4" class="col-center flex-col">
-              <el-popover placement="right" width="200" trigger="click">
+              <el-popover placement="right" width="200" trigger="click" >
                 <el-input
                   v-model="customSeed"
                   placeholder="自定义种子"
@@ -242,6 +247,8 @@
               </div></el-col
             >
           </el-row>
+        </div>
+         
           <el-divider></el-divider>
           <el-row type="flex">
             <el-col
@@ -378,8 +385,8 @@
             </div>
           </div>
         </div>
-        <div v-for="(item,i) in killerSigns" :key="i" data-keyword="1,2">
-          <div v-bind:id="'killer-notes'+i" class="notes bad">
+        <div v-for="(item,i) in killerSigns" :key="i" >
+          <div v-bind:id="'killer-notes'+i" class="notes bad"data-keyword="1,2">
             <div class="letter-box">{{item}}</div>
             <div class="notes-right">
               <div style="color: #ffe082" class="notes-title">
@@ -508,14 +515,14 @@
           </div>
         </div>
 
-        <div id="fortune-notes" class="notes" data-keyword="2,5">
+        <div id="fortune-notes" class="notes" data-keyword="2,6">
           <div class="letter-box">💰</div>
           <div class="notes-right">
             <div style="color: #e64a19" class="notes-title">
               <i>这一份是给你的</i>
             </div>
             <div class="notes-content">
-              🔍+1。下一次调查额外得知周围角色的身份。
+              🔍+1。下一次调查额外得知相邻角色的身份。
             </div>
           </div>
         </div>
