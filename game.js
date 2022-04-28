@@ -6,7 +6,7 @@ import { targetOnClick } from "./target/target.js";
 import { citizenOnClick } from "./citizen/citizen.js";
 import { detectiveOnClick } from "./detective/detective.js";
 import { jamOnClick, jamCheck } from "./jam/jam.js";
-import { crazyOnClick } from "./crazy/crazy.js";
+import { witchOnClick, witchCountDown } from "./witch/witch.js";
 import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
 import { killerOnClick, killerCountDown } from "./killer/killer.js";
 import { augurOnClick, augurInit } from "./augur/augur.js";
@@ -28,7 +28,7 @@ let randomPeople = [
   citizenOnClick,
   detectiveOnClick,
   jamOnClick,
-  crazyOnClick,
+  witchOnClick,
   sheriffOnClick,
   killerOnClick,
   augurOnClick,
@@ -42,7 +42,7 @@ let notes = [
   "citizen",
   "detective",
   "jam",
-  "crazy",
+  "witch",
   "sheriff",
   "killer",
   "augur",
@@ -70,7 +70,7 @@ let names = [
   "市民",
   "侦探",
   "干扰者",
-  "疯子",
+  "女巫",
   "警长",
   "杀手",
   "占卜师",
@@ -178,7 +178,6 @@ var app = new Vue({
     awards: [],
     allAwards: ALLAWARDS,
     //[疯子]
-    isLastDark: false,
     //[杀手]
     killers: [],
     killerSigns: ["", "1️⃣", "2️⃣", "3️⃣"],
@@ -193,6 +192,9 @@ var app = new Vue({
     copiesCurr: undefined,
     //[赏金猎人]
     fortuneBonusNow: false,
+    //[女巫]
+    witches: [],
+    witchSigns: ["", "⁉️", "❗"],
   },
   methods: {
     //游戏初始化
@@ -290,14 +292,15 @@ var app = new Vue({
           this.metrics[2]++;
 
           killerCountDown(app); //[杀手]
+          //[赏金猎人]
+          fortuneTargetBonus(app, that[ii][jj]);
           //[干扰者]
           if (!that[ii][jj].signs["jammed"] && jamCheck(app, that[ii][jj])) {
             that[ii][jj].signs["jammed"] = true;
             that[ii][jj].infos["jam-notes"] = true;
             this.isLastDark = false;
+            witchCountDown(app, undefined);
           } else {
-            //[赏金猎人]
-            fortuneTargetBonus(app, that[ii][jj]);
             //开始执行效果
             if (!randomPeople[that[ii][jj].roleid](e, app, ii, jj)) {
               that[ii][jj].shown = true;
@@ -305,6 +308,7 @@ var app = new Vue({
               sheriffCheck(app, that[ii][jj]);
               //[赏金猎人]
               fortuneCheck(app, that[ii][jj]);
+              witchCountDown(app, that[ii][jj]);
               this.records[that[ii][jj].roleid].showedNum++;
             }
 

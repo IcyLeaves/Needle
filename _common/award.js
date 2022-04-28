@@ -17,7 +17,7 @@ var ACHIEVE = {
   cntChancesIsOne: 0, //线索为1的次数
   boardGameOver: undefined, //游戏结束时的地图
   isKilled: false, //是否被【杀手】干掉
-  isAddChancesByCrazy: false, //是否靠【疯子】补充线索
+  isAddChancesByWitch: false, //是否靠【女巫】补充线索
 };
 
 var AWARDS = [
@@ -241,7 +241,7 @@ var AWARDS = [
         id: "2-3",
         title: "坏心办好事",
         color: RANK.RARE,
-        note: "【疯子】的效果拯救了你",
+        note: "【女巫】的效果拯救了你",
       },
     ],
     checkFunc: () => {
@@ -252,7 +252,7 @@ var AWARDS = [
         else if (times >= 7) res.push("2-1");
         else if (times >= 3) res.push("2-0");
       }
-      if (ACHIEVE.isAddChancesByCrazy == true) res.push("2-3");
+      if (ACHIEVE.isAddChancesByWitch == true) res.push("2-3");
       return res;
     },
   },

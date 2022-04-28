@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="citizen/citizen.css" />
     <link rel="stylesheet" href="detective/detective.css" />
     <link rel="stylesheet" href="jam/jam.css" />
-    <link rel="stylesheet" href="crazy/crazy.css" />
+    <link rel="stylesheet" href="witch/witch.css" />
     <link rel="stylesheet" href="sheriff/sheriff.css" />
     <link rel="stylesheet" href="killer/killer.css" />
     <link rel="stylesheet" href="augur/augur.css" />
@@ -359,12 +359,25 @@
             </div>
           </div>
         </div>
-        <div id="crazy" class="notes bad" data-keyword="1,2,4">
-          <div class="letter-box crazy"></div>
+        <div id="witch" class="notes bad" data-keyword="1,2,4">
+          <div class="letter-box witch"></div>
           <div class="notes-right">
-            <div style="color: #ef9a9a" class="notes-title">疯子</div>
+            <div style="color: #CE93D8" class="notes-title">女巫</div>
             <div class="notes-content">
-              如果上一次调查使得一黑暗势力现身，🔍变为1
+              现身后，后两次调查如果使得一名邪恶势力现身，🔍变为1
+            </div>
+          </div>
+        </div>
+        <div v-for="(item,i) in witchSigns" :key="'witch-notes'+i" >
+          <div v-bind:id="'witch-notes'+i" class="notes bad"data-keyword="4">
+            <div class="letter-box">{{item}}</div>
+            <div class="notes-right">
+              <div style="color: #CE93D8" class="notes-title">
+                <i>你被女巫诅咒了</i>
+              </div>
+              <div class="notes-content">
+                现在如果碰到黑暗势力的话，🔍就会变成1个，同时你身上的诅咒全部失效。
+              </div>
             </div>
           </div>
         </div>
@@ -526,6 +539,7 @@
             </div>
           </div>
         </div>
+        
       </div>
       <!-- 所有职业小标志 UPDATE HERE -->
       <div id="signs" style="display: none">
@@ -553,6 +567,8 @@
           {{i}}
         </div>
         <span id="fortune-signs">💰</span>
+        <span id="witch-signs2">❗</span>
+        <span id="witch-signs1">⁉️</span>
       </div>
     </div>
 
