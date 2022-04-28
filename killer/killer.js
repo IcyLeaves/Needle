@@ -7,8 +7,6 @@ function killerOnClick(e, context, i, j) {
   context.currKillerTimer = 3;
   context.boxArray[i][j].signs[`killing3`] = true;
   context.boxArray[i][j].infos[`killer-notes3`] = true;
-
-  context.isLastDark = true; //[疯子]
 }
 function killerCountDown(context) {
   for (var idx = 0; idx < context.killers.length; ) {

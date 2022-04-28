@@ -5,11 +5,9 @@ function copiesOnClick(e, context, i, j) {
 
   var idx = context.copiesTeam.indexOf(COMMON.setPair(i, j));
   if (idx > -1) context.copiesTeam.splice(idx, 1);
-
-  context.isLastDark = true; //[疯子]
 }
 function copiesCheck(context, i, j) {
-  if (context.copiesTeam.length > 0) {
+  if (context.boxArray[i][j].roleid == 0 && context.copiesTeam.length > 0) {
     var pair = COMMON.withdraw(context.copiesTeam);
     //清除上次的标记
     var [currX, currY] = COMMON.getPair(context.copiesCurr);

@@ -1,13 +1,6 @@
 import { copiesCheck } from "../copies/copies.js";
 import { ACHIEVE } from "../_common/award.js";
 function targetOnClick(e, context, i, j) {
-  //[替身]
-  if (copiesCheck(context, i, j)) {
-    context.chances++;
-    context.step(e, context, i, j);
-    return true;
-  }
-
   e.srcElement.classList.add("target");
   context.boxArray[i][j].infos["target"] = true;
 
@@ -24,6 +17,5 @@ function targetOnClick(e, context, i, j) {
 
     context.isGameOver = 0;
   }
-  context.isLastDark = false; //[疯子]
 }
 export { targetOnClick };

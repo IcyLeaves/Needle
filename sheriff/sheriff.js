@@ -9,8 +9,6 @@ function sheriffOnClick(e, context, i, j) {
   }
   context.boxArray[i][j].sheriffRemain = init;
   if (init == 0) context.chances *= 2;
-
-  context.isLastDark = false; //[疯子]
 }
 function sheriffCheck(context, curr) {
   for (var near of COMMON.nearEight(context.boxArray, curr.i, curr.j)) {

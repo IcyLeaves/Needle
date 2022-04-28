@@ -16,8 +16,6 @@ function fortuneOnClick(e, context, i, j) {
   var pair = COMMON.withdraw(deck);
   var [fx, fy] = COMMON.getPair(pair);
   context.boxArray[fx][fy].fortuneTarget = true;
-
-  context.isLastDark = false; //[疯子]
 }
 function fortuneTargetBonus(context, curr) {
   if (context.fortuneLastBonus == true) {

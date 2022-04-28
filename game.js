@@ -11,7 +11,7 @@ import { sheriffOnClick, sheriffCheck } from "./sheriff/sheriff.js";
 import { killerOnClick, killerCountDown } from "./killer/killer.js";
 import { augurOnClick, augurInit } from "./augur/augur.js";
 import { volunteerOnClick, volunteerCheck } from "./volunteer/volunteer.js";
-import { copiesOnClick } from "./copies/copies.js";
+import { copiesCheck, copiesOnClick } from "./copies/copies.js";
 import { reporterOnClick } from "./reporter/reporter.js";
 import {
   fortuneOnClick,
@@ -19,10 +19,15 @@ import {
   fortuneOver,
   fortuneCheck,
 } from "./fortune/fortune.js";
+import {
+  gansterOnClick,
+  gansterStep,
+  gansterCheck,
+} from "./ganster/ganster.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 16, 15, 5, 3, 5, 3, 3, 3, 2, 5, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 14, 14, 5, 3, 5, 3, 3, 3, 2, 5, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -36,6 +41,7 @@ let randomPeople = [
   copiesOnClick,
   reporterOnClick,
   fortuneOnClick,
+  gansterOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -50,6 +56,7 @@ let notes = [
   "copies",
   "reporter",
   "fortune",
+  "ganster",
 ]; //UPDATE HERE
 let colors = [
   "#66bb6a",
@@ -64,6 +71,7 @@ let colors = [
   "#80CBC4",
   "#0288D1",
   "#E64A19",
+  "#bcaaa4",
 ]; //UPDATE HERE
 let names = [
   "目标",
@@ -78,6 +86,7 @@ let names = [
   "替身",
   "记者",
   "赏金猎人",
+  "黑帮老大",
 ]; //UPDATE HERE
 let keywords = {
   1: {
@@ -195,6 +204,8 @@ var app = new Vue({
     //[女巫]
     witches: [],
     witchSigns: ["", "⁉️", "❗"],
+    //[黑帮老大]
+    gansters: [],
   },
   methods: {
     //游戏初始化
@@ -278,54 +289,103 @@ var app = new Vue({
       }
     },
     //主逻辑
-    step(e, context, ii, jj) {
-      if (this.isGameOver == -1) {
-        var that = this.boxArray;
-        if (!ii) ii = e.currentTarget.i;
-        if (!jj) jj = e.currentTarget.j;
-        //减少一次猜测次数
-        if (!that[ii][jj].shown && this.chances > 0) {
-          if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
-          //[志愿者]
-          volunteerCheck(app, that[ii][jj]);
-          this.chances--;
-          this.metrics[2]++;
-
-          killerCountDown(app); //[杀手]
-          //[赏金猎人]
-          fortuneTargetBonus(app, that[ii][jj]);
-          //[干扰者]
-          if (!that[ii][jj].signs["jammed"] && jamCheck(app, that[ii][jj])) {
-            that[ii][jj].signs["jammed"] = true;
-            that[ii][jj].infos["jam-notes"] = true;
-            this.isLastDark = false;
-            witchCountDown(app, undefined);
-          } else {
-            //开始执行效果
-            if (!randomPeople[that[ii][jj].roleid](e, app, ii, jj)) {
-              that[ii][jj].shown = true;
-              //[警长]
-              sheriffCheck(app, that[ii][jj]);
-              //[赏金猎人]
-              fortuneCheck(app, that[ii][jj]);
-              witchCountDown(app, that[ii][jj]);
-              this.records[that[ii][jj].roleid].showedNum++;
-            }
-
-            delete that[ii][jj].signs["jammed"];
-            delete that[ii][jj].infos["jam-notes"];
-          }
-          this.refreshInfos(ii, jj);
-          this.refreshAllSigns();
-          this.drawCanvas();
-        }
-        if (this.isGameOver == -1 && this.chances == 0) this.isGameOver = 0;
-        if (this.isGameOver != -1) {
-          this.gameover();
-        }
-        this.checkContest() && this.saveCookies();
+    step(e) {
+      var stepFunction = this.stepStartState;
+      while (stepFunction) {
+        stepFunction = stepFunction(e);
       }
     },
+    stepStartState(e) {
+      //点击事件是否要执行
+      if (this.isGameOver == -1) {
+        return this.stepValidClick;
+      }
+      return this.stepEndState;
+    },
+    stepValidClick(e) {
+      //是不是花费了线索的点击
+      var { i, j } = e.currentTarget;
+      if (
+        !this.boxArray[i][j].shown &&
+        this.chances > 0 &&
+        !gansterCheck(app, this.boxArray[i][j]) //[黑帮老大]: 如果该格是禁止通行的，则无法视为有效点击
+      ) {
+        // app.$message({
+        //   message: `${names[this.boxArray[i][j].roleid]} ${i} ${j}`,
+        //   type: "success",
+        // });
+        return this.stepBegin;
+      }
+      return this.stepEndState;
+    },
+    stepBegin(e) {
+      //调查开始
+      var { i, j } = e.currentTarget;
+      if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
+      //[志愿者]: 如果线索花费前刚好为1，发动检查
+      volunteerCheck(app, this.boxArray[i][j]);
+      return this.stepWhenUseChances;
+    },
+    stepWhenUseChances(e) {
+      //花费一条线索
+      var { i, j } = e.currentTarget;
+      this.chances--;
+      this.metrics[2]++;
+      //[杀手]: 所有现身杀手的计时器每回合倒数
+      killerCountDown(app);
+      //[赏金猎人]: 检查是否为赏金线索并触发
+      fortuneTargetBonus(app, this.boxArray[i][j]);
+      //[黑帮老大]: 场上所有小弟移动一步
+      gansterStep(app);
+      return this.stepBeforeAppear;
+    },
+    stepBeforeAppear(e) {
+      //在角色现身前
+      var { i, j } = e.currentTarget;
+      //[干扰者]: 如果被干扰，直接跳到点击结束
+      if (jamCheck(app, this.boxArray[i][j])) {
+        //[女巫]: 和[杀手]一样进行倒数
+        witchCountDown(app, undefined);
+        return this.stepEndState;
+      } else {
+        //[干扰者]: 如果之前已经被干扰，此次调查可以破除干扰
+        delete this.boxArray[i][j].signs["jammed"];
+        delete this.boxArray[i][j].infos["jam-notes"];
+      }
+      return this.stepAppear;
+    },
+    stepAppear(e) {
+      //角色现身
+      var { i, j } = e.currentTarget;
+      if (copiesCheck(app, i, j)) {
+        return this.stepAppear(e);
+      }
+      randomPeople[this.boxArray[i][j].roleid](e, app, i, j);
+      this.boxArray[i][j].shown = true;
+      this.records[this.boxArray[i][j].roleid].showedNum++;
+      //[警长]
+      sheriffCheck(app, this.boxArray[i][j]);
+      //[赏金猎人]
+      fortuneCheck(app, this.boxArray[i][j]);
+      //[女巫]
+      witchCountDown(app, this.boxArray[i][j]);
+
+      return this.stepEndState;
+    },
+    stepEndState(e) {
+      var { i, j } = e.currentTarget;
+
+      this.refreshInfos(i, j);
+      this.refreshAllSigns();
+      this.drawCanvas();
+      if (this.isGameOver == -1 && this.chances == 0) this.isGameOver = 0;
+      if (this.isGameOver != -1) {
+        this.gameover();
+      }
+      this.checkContest() && this.saveCookies();
+      return undefined;
+    },
+
     drawCanvas(isLast) {
       var gameBoard = document.getElementById("main-image");
       var show = document.getElementById("show-image");

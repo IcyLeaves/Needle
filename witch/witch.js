@@ -10,7 +10,11 @@ function witchOnClick(e, context, i, j) {
   context.witches.push(COMMON.setPair(i, j));
 }
 function witchCountDown(context, curr) {
-  if (curr && context.witches.indexOf(COMMON.setPair(curr.i, curr.j)) > -1)
+  if (
+    curr &&
+    context.witches.indexOf(COMMON.setPair(curr.i, curr.j)) > -1 &&
+    context.witches.length == 1
+  )
     return;
   var isDark = curr && context.MOONS.indexOf(curr.roleid) > -1;
   if (context.witches.length > 0 && isDark) {

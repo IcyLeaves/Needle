@@ -34,8 +34,6 @@ function augurOnClick(e, context, i, j) {
       }
     }
   }
-
-  context.isLastDark = false; //[疯子]
 }
 
 function augurInit(m, n) {

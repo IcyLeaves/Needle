@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="copies/copies.css" />
     <link rel="stylesheet" href="reporter/reporter.css" />
     <link rel="stylesheet" href="fortune/fortune.css" />
+    <link rel="stylesheet" href="ganster/ganster.css"/>
   </head>
   <body>
     <div id="app" style="display: none">
@@ -134,7 +135,7 @@
               <div style="text-align: center">
                 消耗一个🔍来得知一个格子的身份，同时触发对应的效果。</br>
                 给你有限的🔍，找出绿色的<span class="win">目标</span>即可获胜。</br>
-                如果没有🔍，则视为失败。
+                如果没有🔍，则视为失败
               </div>
               <!-- <div class="modal-title" style="font-size: 25px">百科</div>
               <el-row
@@ -344,7 +345,7 @@
           <div class="notes-right">
             <div style="color: #81d4fa" class="notes-title">干扰者</div>
             <div class="notes-content">
-              现身前，相邻角色需要调查两次。
+              现身前，相邻角色需要调查两次
             </div>
           </div>
         </div>
@@ -376,7 +377,7 @@
                 <i>你被女巫诅咒了</i>
               </div>
               <div class="notes-content">
-                现在如果碰到黑暗势力的话，🔍就会变成1个，同时你身上的诅咒全部失效。
+                现在如果碰到黑暗势力的话，🔍就会变成1个，同时你身上的诅咒全部失效
               </div>
             </div>
           </div>
@@ -535,11 +536,43 @@
               <i>这一份是给你的</i>
             </div>
             <div class="notes-content">
-              🔍+1。下一次调查额外得知相邻角色的身份。
+              🔍+1。下一次调查额外得知相邻角色的身份
             </div>
           </div>
         </div>
-        
+        <div id="ganster" class="notes bad" data-keyword="">
+          <div class="letter-box ganster"></div>
+          <div class="notes-right">
+            <div style="color: #bcaaa4" class="notes-title">
+              黑帮老大
+            </div>
+            <div class="notes-content">
+              在原地生成一个会不断走动的🦹‍♂️
+            </div>
+          </div>
+        </div>
+        <div id="ganster-brother-info" class="notes bad" data-keyword="2,5,6">
+          <div class="letter-box">🦹‍♂️</div>
+          <div class="notes-right">
+            <div style="color: #bcaaa4" class="notes-title">
+              <i>黑帮小弟</i>
+            </div>
+            <div class="notes-content">
+              每次调查后，会移动到随机的相邻格上。<span style='color:#bcaaa4'>黑帮小弟</span>及周围的格子无法调查
+            </div>
+          </div>
+        </div>
+        <div id="ganster-area-info" class="notes bad" data-keyword="2,5">
+          <div class="letter-box">⛔</div>
+          <div class="notes-right">
+            <div style="color: #bcaaa4" class="notes-title">
+              <i>危险地带</i>
+            </div>
+            <div class="notes-content">
+              <span style='color:#bcaaa4'>黑帮小弟</span>在周围的话，还是先不要来这里调查比较好
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 所有职业小标志 UPDATE HERE -->
       <div id="signs" style="display: none">
@@ -569,6 +602,8 @@
         <span id="fortune-signs">💰</span>
         <span id="witch-signs2">❗</span>
         <span id="witch-signs1">⁉️</span>
+        <span id="ganster-brother-sign">🦹‍♂️</span>
+        <span id="ganster-area-sign">⛔</span>
       </div>
     </div>
 

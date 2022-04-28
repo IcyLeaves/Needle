@@ -9,7 +9,5 @@ function reporterOnClick(e, context, i, j) {
   }
   context.boxArray[i][j].infos[`reporter-notes-${init}`] = true;
   context.boxArray[i][j].signs[`reporter-signs-${init}`] = true;
-
-  context.isLastDark = false; //[疯子]
 }
 export { reporterOnClick };
