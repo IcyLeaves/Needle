@@ -72,7 +72,7 @@ function gansterCheck(context, curr) {
 function gansterBoardCheck(context) {
   for (var boxRow of context.boxArray) {
     for (var box of boxRow) {
-      if (!gansterCheck(box) && !box.shown) return true;
+      if (!gansterCheck(undefined, box) && !box.shown) return true;
     }
   }
   return false;

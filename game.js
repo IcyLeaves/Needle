@@ -318,82 +318,97 @@ var app = new Vue({
     },
     stepValidClick(e) {
       //是不是花费了线索的点击
-      var { i, j } = e.currentTarget;
-      if (
-        !this.boxArray[i][j].shown &&
-        this.chances > 0 &&
-        !gansterCheck(app, this.boxArray[i][j]) //[黑帮老大]: 如果该格是禁止通行的，则无法视为有效点击
-      ) {
-        // app.$message({
-        //   message: `${names[this.boxArray[i][j].roleid]} ${i} ${j}`,
-        //   type: "success",
-        // });
-        return this.stepBegin(e);
+      if (this.chances > 0) {
+        if (!e) return this.stepBegin();
+        var { i, j } = e.currentTarget;
+        if (
+          !this.boxArray[i][j].shown &&
+          !gansterCheck(app, this.boxArray[i][j]) //[黑帮老大]: 如果该格是禁止通行的，则无法视为有效点击
+        ) {
+          // app.$message({
+          //   message: `${names[this.boxArray[i][j].roleid]} ${i} ${j}`,
+          //   type: "success",
+          // });
+          return this.stepBegin(e);
+        }
       }
       return this.stepEndState(e);
     },
     stepBegin(e) {
       //调查开始
-      var { i, j } = e.currentTarget;
       if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
-      //[志愿者]: 如果线索花费前刚好为1，发动检查
-      volunteerCheck(app, this.boxArray[i][j]);
+      if (e) {
+        var { i, j } = e.currentTarget;
+        //[志愿者]: 如果线索花费前刚好为1，发动检查
+        volunteerCheck(app, this.boxArray[i][j]);
+      }
+
       return this.stepWhenUseChances(e);
     },
     stepWhenUseChances(e) {
       //花费一条线索
-      var { i, j } = e.currentTarget;
       this.chances--;
-      this.metrics[2]++;
       //[杀手]: 所有现身杀手的计时器每回合倒数
       killerCountDown(app);
-      //[赏金猎人]: 检查是否为赏金线索并触发
-      fortuneTargetBonus(app, this.boxArray[i][j]);
       //[黑帮老大]: 场上所有小弟移动一步
       gansterStep(app);
+      if (e) {
+        var { i, j } = e.currentTarget;
+        this.metrics[2]++;
+        //[赏金猎人]: 检查是否为赏金线索并触发
+        fortuneTargetBonus(app, this.boxArray[i][j]);
+      }
+
       return this.stepBeforeAppear(e);
     },
     stepBeforeAppear(e) {
       //在角色现身前
-      var { i, j } = e.currentTarget;
-      //[干扰者]: 如果被干扰，直接跳到点击结束
-      if (jamCheck(app, this.boxArray[i][j])) {
+      if (e) {
+        var { i, j } = e.currentTarget;
+        //[干扰者]: 如果被干扰，直接跳到点击结束
+        if (jamCheck(app, this.boxArray[i][j])) {
+          //[女巫]: 和[杀手]一样进行倒数
+          witchCountDown(app);
+          return this.stepEndState(e);
+        } else {
+          //[干扰者]: 如果之前已经被干扰，此次调查可以破除干扰
+          delete this.boxArray[i][j].signs["jammed"];
+          delete this.boxArray[i][j].infos["jam-notes"];
+        }
+      } else {
         //[女巫]: 和[杀手]一样进行倒数
         witchCountDown(app);
-        return this.stepEndState(e);
-      } else {
-        //[干扰者]: 如果之前已经被干扰，此次调查可以破除干扰
-        delete this.boxArray[i][j].signs["jammed"];
-        delete this.boxArray[i][j].infos["jam-notes"];
       }
       return this.stepAppear(e);
     },
     stepAppear(e) {
       //角色现身
-      var { i, j } = e.currentTarget;
-      if (copiesCheck(app, i, j)) {
-        return this.stepAppear(e);
+      if (e) {
+        var { i, j } = e.currentTarget;
+        if (copiesCheck(app, i, j)) {
+          return this.stepAppear(e);
+        }
+        randomPeople[this.boxArray[i][j].roleid](e, app, i, j);
+        this.boxArray[i][j].shown = true;
+        this.records[this.boxArray[i][j].roleid].showedNum++;
+        //[警长]
+        sheriffCheck(app, this.boxArray[i][j]);
+        //[赏金猎人]
+        fortuneCheck(app, this.boxArray[i][j]);
+        //[女巫]
+        witchCountDown(app, this.boxArray[i][j]);
       }
-      randomPeople[this.boxArray[i][j].roleid](e, app, i, j);
-      this.boxArray[i][j].shown = true;
-      this.records[this.boxArray[i][j].roleid].showedNum++;
-      //[警长]
-      sheriffCheck(app, this.boxArray[i][j]);
-      //[赏金猎人]
-      fortuneCheck(app, this.boxArray[i][j]);
-      //[女巫]
-      witchCountDown(app, this.boxArray[i][j]);
 
       return this.stepEndState(e);
     },
     stepEndState(e) {
-      var { i, j } = e.currentTarget;
+      if (e) {
+        var { i, j } = e.currentTarget;
+        this.refreshInfos(i, j);
+      }
 
-      this.refreshInfos(i, j);
       this.refreshAllSigns();
       this.drawCanvas();
-      //[黑帮老大]: 如果棋盘已经无处可点，进入忙等阶段
-      this.gansterBoardCheck();
       return this.stepIsGameOver(e);
     },
     stepIsGameOver() {
@@ -402,6 +417,9 @@ var app = new Vue({
         this.gameover();
       }
       this.checkContest() && this.saveCookies();
+      //[黑帮老大]: 如果棋盘已经无处可点，进入忙等阶段
+      !gansterBoardCheck(app) &&
+        this.step(undefined, this.stepStartState, 1000);
       this.steping = false;
       return { func: undefined, time: -1 };
     },
