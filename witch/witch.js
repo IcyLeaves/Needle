@@ -9,7 +9,7 @@ function witchOnClick(e, context, i, j) {
   context.boxArray[i][j].infos[`witch-notes2`] = true;
   context.witches.push(COMMON.setPair(i, j));
 }
-function witchCountDown(context, curr) {
+async function witchCountDown(context, curr) {
   if (
     curr &&
     context.witches.indexOf(COMMON.setPair(curr.i, curr.j)) > -1 &&
@@ -18,7 +18,7 @@ function witchCountDown(context, curr) {
     return;
   var isDark = curr && context.MOONS.indexOf(curr.roleid) > -1;
   if (context.witches.length > 0 && isDark) {
-    context.chances = 1;
+    await context.animateChances(1 - context.chances);
   }
   for (var i = 0; i < context.witches.length; ) {
     var [fx, fy] = COMMON.getPair(context.witches[i]);

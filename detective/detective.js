@@ -1,7 +1,7 @@
-function detectiveOnClick(e, context, i, j) {
+async function detectiveOnClick(e, context, i, j) {
   e.srcElement.classList.add("detective");
   context.boxArray[i][j].infos["detective"] = true;
 
-  context.chances += 2;
+  await context.animateChances(2);
 }
 export { detectiveOnClick };

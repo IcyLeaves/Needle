@@ -55,4 +55,7 @@ function getPair(str) {
   var [xstr, ystr] = str.split("-");
   return [parseInt(xstr), parseInt(ystr)];
 }
-export { swap, withdraw, nearFour, nearEight, setPair, getPair };
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+export { swap, withdraw, nearFour, nearEight, setPair, getPair, sleep };
