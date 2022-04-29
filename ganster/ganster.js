@@ -69,4 +69,12 @@ function gansterStep(context) {
 function gansterCheck(context, curr) {
   return curr.signs["ganster-brother-sign"] || curr.signs["ganster-area-sign"];
 }
-export { gansterOnClick, gansterStep, gansterCheck };
+function gansterBoardCheck(context) {
+  for (var boxRow of context.boxArray) {
+    for (var box of boxRow) {
+      if (!gansterCheck(box) && !box.shown) return true;
+    }
+  }
+  return false;
+}
+export { gansterOnClick, gansterStep, gansterCheck, gansterBoardCheck };

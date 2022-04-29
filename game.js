@@ -23,6 +23,7 @@ import {
   gansterOnClick,
   gansterStep,
   gansterCheck,
+  gansterBoardCheck,
 } from "./ganster/ganster.js";
 const ROWS = 8;
 const COLS = 8;
@@ -171,6 +172,7 @@ var app = new Vue({
     allAwardsIdx: 0,
     gifStatus: -2,
     keywordsShow: {},
+    steping: false,
     //全局数据
     seed: 0,
     customSeed: "",
@@ -194,7 +196,7 @@ var app = new Vue({
     //[占卜师]
     augurDecks: [],
     SUNS: [0, 1, 2, 5, 7, 8, 10, 11], //UPDATE HERE
-    MOONS: [3, 4, 6, 9], //UPDATE HERE
+    MOONS: [3, 4, 6, 9, 12], //UPDATE HERE
     //[替身]
     copiesArrow: ["↖️", "⬆️", "↗️", "⬅️", "", "➡️", "↙️", "⬇️", "↘️"],
     copiesTeam: [],
@@ -289,18 +291,30 @@ var app = new Vue({
       }
     },
     //主逻辑
-    step(e) {
-      var stepFunction = this.stepStartState;
-      while (stepFunction) {
-        stepFunction = stepFunction(e);
+    step(e, func, time) {
+      //time 为空意味着是点击事件刚触发
+      if (!time) return this.step(e, this.stepStartState, -1);
+      //func 为空代表没有后续了
+      if (func) {
+        //time<0意味着同步进行
+        if (time < 0) {
+          var resFunc = func(e);
+          return this.step(e, resFunc.func, resFunc.time);
+        }
+        setTimeout(() => {
+          var resFunc = func(e);
+          this.step(e, resFunc.func, resFunc.time);
+        }, time);
       }
     },
     stepStartState(e) {
       //点击事件是否要执行
+      if (this.steping == true) return { func: undefined, time: -1 };
+      this.steping = true;
       if (this.isGameOver == -1) {
-        return this.stepValidClick;
+        return this.stepValidClick(e);
       }
-      return this.stepEndState;
+      return { func: undefined, time: -1 };
     },
     stepValidClick(e) {
       //是不是花费了线索的点击
@@ -314,9 +328,9 @@ var app = new Vue({
         //   message: `${names[this.boxArray[i][j].roleid]} ${i} ${j}`,
         //   type: "success",
         // });
-        return this.stepBegin;
+        return this.stepBegin(e);
       }
-      return this.stepEndState;
+      return this.stepEndState(e);
     },
     stepBegin(e) {
       //调查开始
@@ -324,7 +338,7 @@ var app = new Vue({
       if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
       //[志愿者]: 如果线索花费前刚好为1，发动检查
       volunteerCheck(app, this.boxArray[i][j]);
-      return this.stepWhenUseChances;
+      return this.stepWhenUseChances(e);
     },
     stepWhenUseChances(e) {
       //花费一条线索
@@ -337,7 +351,7 @@ var app = new Vue({
       fortuneTargetBonus(app, this.boxArray[i][j]);
       //[黑帮老大]: 场上所有小弟移动一步
       gansterStep(app);
-      return this.stepBeforeAppear;
+      return this.stepBeforeAppear(e);
     },
     stepBeforeAppear(e) {
       //在角色现身前
@@ -345,14 +359,14 @@ var app = new Vue({
       //[干扰者]: 如果被干扰，直接跳到点击结束
       if (jamCheck(app, this.boxArray[i][j])) {
         //[女巫]: 和[杀手]一样进行倒数
-        witchCountDown(app, undefined);
-        return this.stepEndState;
+        witchCountDown(app);
+        return this.stepEndState(e);
       } else {
         //[干扰者]: 如果之前已经被干扰，此次调查可以破除干扰
         delete this.boxArray[i][j].signs["jammed"];
         delete this.boxArray[i][j].infos["jam-notes"];
       }
-      return this.stepAppear;
+      return this.stepAppear(e);
     },
     stepAppear(e) {
       //角色现身
@@ -370,7 +384,7 @@ var app = new Vue({
       //[女巫]
       witchCountDown(app, this.boxArray[i][j]);
 
-      return this.stepEndState;
+      return this.stepEndState(e);
     },
     stepEndState(e) {
       var { i, j } = e.currentTarget;
@@ -378,14 +392,19 @@ var app = new Vue({
       this.refreshInfos(i, j);
       this.refreshAllSigns();
       this.drawCanvas();
+      //[黑帮老大]: 如果棋盘已经无处可点，进入忙等阶段
+      this.gansterBoardCheck();
+      return this.stepIsGameOver(e);
+    },
+    stepIsGameOver() {
       if (this.isGameOver == -1 && this.chances == 0) this.isGameOver = 0;
       if (this.isGameOver != -1) {
         this.gameover();
       }
       this.checkContest() && this.saveCookies();
-      return undefined;
+      this.steping = false;
+      return { func: undefined, time: -1 };
     },
-
     drawCanvas(isLast) {
       var gameBoard = document.getElementById("main-image");
       var show = document.getElementById("show-image");
