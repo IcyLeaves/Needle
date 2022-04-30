@@ -1,8 +1,5 @@
 import * as COMMON from "../_common/common.js";
 async function sheriffOnClick(e, context, i, j) {
-  e.srcElement.classList.add("sheriff");
-  context.boxArray[i][j].infos["sheriff"] = true;
-
   var init = 8;
   var nears = await COMMON.nearEight(context.boxArray, i, j);
   for (var near of nears) {

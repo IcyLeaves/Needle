@@ -1,8 +1,5 @@
 import * as COMMON from "../_common/common.js";
 function jamOnClick(e, context, i, j) {
-  e.srcElement.classList.add("jam");
-  context.boxArray[i][j].infos["jam"] = true;
-
   // let i = e.srcElement.getAttribute("data-i");
   // let j = e.srcElement.getAttribute("data-j");
 }

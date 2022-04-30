@@ -1,9 +1,6 @@
 import * as COMMON from "../_common/common.js";
 
 function witchOnClick(e, context, i, j) {
-  e.srcElement.classList.add("witch");
-  context.boxArray[i][j].infos["witch"] = true;
-
   context.boxArray[i][j].witchTimer = 2;
   context.boxArray[i][j].signs[`witch-signs2`] = true;
   context.boxArray[i][j].infos[`witch-notes2`] = true;

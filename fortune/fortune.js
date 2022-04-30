@@ -1,9 +1,6 @@
 import * as COMMON from "../_common/common.js";
 
 function fortuneOnClick(e, context, i, j) {
-  e.srcElement.classList.add("fortune");
-  context.boxArray[i][j].infos["fortune"] = true;
-
   var deck = [];
   for (var m = 0; m < context.boxArray.length; m++) {
     for (var n = 0; n < context.boxArray[0].length; n++) {

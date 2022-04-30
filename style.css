@@ -266,3 +266,6 @@
   align-items: center;
   cursor: default;
 }
+.bang-cursor {
+  cursor: url("./target.png"), auto; /*小图片地址*/
+}

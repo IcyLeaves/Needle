@@ -1,8 +1,5 @@
 import * as COMMON from "../_common/common.js";
 function augurOnClick(e, context, i, j) {
-  e.srcElement.classList.add("augur");
-  context.boxArray[i][j].infos["augur"] = true;
-
   if (context.augurDecks.length > 0) {
     var i = Math.floor(Math.random() * context.augurDecks.length);
     var n = context.augurDecks.length;

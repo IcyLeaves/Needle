@@ -1,8 +1,5 @@
 import * as COMMON from "../_common/common.js";
 function copiesOnClick(e, context, i, j) {
-  e.srcElement.classList.add("copies");
-  context.boxArray[i][j].infos["copies"] = true;
-
   var idx = context.copiesTeam.indexOf(COMMON.setPair(i, j));
   if (idx > -1) context.copiesTeam.splice(idx, 1);
 }

@@ -29,9 +29,10 @@
     <link rel="stylesheet" href="reporter/reporter.css" />
     <link rel="stylesheet" href="fortune/fortune.css" />
     <link rel="stylesheet" href="ganster/ganster.css"/>
+    <link rel="stylesheet" href="bangbang/bangbang.css"/>
   </head>
-  <body>
-    <div id="app" style="display: none">
+  <body >
+    <div id="app" style="display: none" :class="[bangbangTimer>0?'bang-cursor':'']">
       <el-container>
         <transition name="el-fade-in-linear">
           <div class="modal-overlay" v-show="showRank" @click="clickOverlay">
@@ -180,7 +181,7 @@
               </el-button>
             </el-col>
             <el-col :span="16" class="col-center">
-              <div class="big-title">Needle v2.5</div>
+              <div class="big-title">Needle v2.6</div>
             </el-col>
             <el-col :span="4">
               <el-button
@@ -270,6 +271,7 @@
                 <el-row v-show="keywordsShow['4']"><div><b>黑暗势力</b>：技能说明背景为黑色的角色</div></el-row>
                 <el-row v-show="keywordsShow['5']"><div><b>周围</b>：特指角色周围8格的区域</div></el-row>
                 <el-row v-show="keywordsShow['6']"><div><b>相邻</b>：特指角色相邻4格的区域</div></el-row>
+                <el-row v-show="keywordsShow['7']"><div><b>暗杀</b>：不耗费🔍。使一个角色【现身】且失去效果。暗杀目标视为失败</div></el-row>
               </div>
             </el-col>
             <el-col :span="12" class="mid-border">
@@ -573,6 +575,28 @@
             </div>
           </div>
         </div>
+        <div id="bangbang" class="notes bad" data-keyword="7">
+          <div class="letter-box bangbang"></div>
+          <div class="notes-right">
+            <div style="color: #f48fb1" class="notes-title">
+              Bang-Bang
+            </div>
+            <div class="notes-content">
+              你的后三次调查变为三次暗杀
+            </div>
+          </div>
+        </div>
+        <div id="bangbang-info" class="notes bad" data-keyword="">
+          <div class="letter-box">💥</div>
+          <div class="notes-right">
+            <div style="color: #f48fb1" class="notes-title">
+              <i>安息吧</i>
+            </div>
+            <div class="notes-content">
+              死人是不会说话的
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 所有职业小标志 UPDATE HERE -->
       <div id="signs" style="display: none">
@@ -600,10 +624,11 @@
           {{i}}
         </div>
         <span id="fortune-signs">💰</span>
-        <span id="witch-signs2">❗</span>
-        <span id="witch-signs1">⁉️</span>
+        <span id="witch-signs2">2️⃣</span>
+        <span id="witch-signs1">1️⃣</span>
         <span id="ganster-brother-sign">🦹‍♂️</span>
         <span id="ganster-area-sign">⛔</span>
+        <span id="bangbang-sign">💥</span>
       </div>
     </div>
 

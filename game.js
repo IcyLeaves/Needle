@@ -25,10 +25,15 @@ import {
   gansterCheck,
   gansterBoardCheck,
 } from "./ganster/ganster.js";
+import {
+  bangbangOnClick,
+  bangbangCheck,
+  bangbangBanged,
+} from "./bangbang/bangbang.js";
 const ROWS = 8;
 const COLS = 8;
 // 必须确保num相加=ROWS*COLS
-const NUMCONFIG = [1, 14, 14, 5, 3, 5, 3, 3, 3, 2, 5, 3, 3]; //UPDATE HERE
+const NUMCONFIG = [1, 13, 12, 5, 3, 5, 3, 3, 3, 2, 5, 3, 3, 3]; //UPDATE HERE
 let randomPeople = [
   targetOnClick,
   citizenOnClick,
@@ -43,6 +48,7 @@ let randomPeople = [
   reporterOnClick,
   fortuneOnClick,
   gansterOnClick,
+  bangbangOnClick,
 ]; //UPDATE HERE
 let notes = [
   "target",
@@ -58,6 +64,7 @@ let notes = [
   "reporter",
   "fortune",
   "ganster",
+  "bangbang",
 ]; //UPDATE HERE
 let colors = [
   "#66bb6a",
@@ -73,6 +80,7 @@ let colors = [
   "#0288D1",
   "#E64A19",
   "#bcaaa4",
+  "#f48fb1",
 ]; //UPDATE HERE
 let names = [
   "目标",
@@ -88,6 +96,7 @@ let names = [
   "记者",
   "赏金猎人",
   "黑帮老大",
+  "Bang-Bang",
 ]; //UPDATE HERE
 let keywords = {
   1: {
@@ -96,7 +105,7 @@ let keywords = {
   },
   2: {
     name: "调查",
-    content: "耗费一个🔍。使角色【现身】",
+    content: "耗费一个🔍。使角色【现身】并触发效果",
   },
   3: {
     name: "光明势力",
@@ -113,6 +122,10 @@ let keywords = {
   6: {
     name: "相邻",
     content: "特指角色相邻4格的区域",
+  },
+  7: {
+    name: "暗杀",
+    content: "不耗费🔍。使一个角色【现身】且失去效果。暗杀目标视为失败",
   },
 };
 var RECORDS = ((nums, infos, colors, names) => {
@@ -193,11 +206,10 @@ var app = new Vue({
     //[杀手]
     killers: [],
     killerSigns: ["", "1️⃣", "2️⃣", "3️⃣"],
-    currKillerTimer: 2,
     //[占卜师]
     augurDecks: [],
     SUNS: [0, 1, 2, 5, 7, 8, 10, 11], //UPDATE HERE
-    MOONS: [3, 4, 6, 9, 12], //UPDATE HERE
+    MOONS: [3, 4, 6, 9, 12, 13], //UPDATE HERE
     //[替身]
     copiesArrow: ["↖️", "⬆️", "↗️", "⬅️", "", "➡️", "↙️", "⬇️", "↘️"],
     copiesTeam: [],
@@ -206,9 +218,11 @@ var app = new Vue({
     fortuneBonusNow: false,
     //[女巫]
     witches: [],
-    witchSigns: ["", "⁉️", "❗"],
+    witchSigns: ["", "1️⃣", "2️⃣"],
     //[黑帮老大]
     gansters: [],
+    //[Bang-Bang]
+    bangbangTimer: 0,
   },
   methods: {
     //游戏初始化
@@ -326,7 +340,11 @@ var app = new Vue({
         }
         var { i, j } = e.target;
         var existGanster = await gansterCheck(app, this.boxArray[i][j]); //[黑帮老大]: 如果该格是禁止通行的，则无法视为有效点击
-        if (!this.boxArray[i][j].shown && !existGanster) {
+        var isBangTime = await bangbangCheck(app); //[Bang-Bang]: 是否在暗杀，暗杀是一种特殊的【调查】
+        if (
+          !this.boxArray[i][j].shown &&
+          (isBangTime || (!isBangTime && !existGanster))
+        ) {
           // app.$message({
           //   message: `${names[this.boxArray[i][j].roleid]} ${i} ${j}`,
           //   type: "success",
@@ -338,70 +356,89 @@ var app = new Vue({
     },
     async stepBegin(e) {
       //调查开始
-      if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
-      if (e) {
-        var { i, j } = e.target;
-        //[志愿者]: 如果线索花费前刚好为1，发动检查
-        await volunteerCheck(app, this.boxArray[i][j]);
+      var isBangTime = await bangbangCheck(app); //[Bang-Bang]: 是否在暗杀，暗杀是一种特殊的【调查】
+      if (!isBangTime) {
+        if (this.chances == 1) ACHIEVE.cntChancesIsOne++;
+        if (e) {
+          var { i, j } = e.target;
+          //[志愿者]: 如果线索花费前刚好为1，发动效果
+          await volunteerCheck(app, this.boxArray[i][j]);
+        }
       }
 
       return await this.stepWhenUseChances(e);
     },
     async stepWhenUseChances(e) {
       //花费一条线索
-      await this.animateChances(-1);
-      //[杀手]: 所有现身杀手的计时器每回合倒数
-      await killerCountDown(app);
-      //[黑帮老大]: 场上所有小弟移动一步
-      await gansterStep(app);
-      if (e) {
-        var { i, j } = e.target;
-        this.metrics[2]++;
-        //[赏金猎人]: 检查是否为赏金线索并触发
-        await fortuneTargetBonus(app, this.boxArray[i][j]);
+      var isBangTime = await bangbangCheck(app); //[Bang-Bang]: 是否在暗杀，暗杀是一种特殊的【调查】
+      if (!isBangTime) {
+        await this.animateChances(-1);
+        //[杀手]: 所有现身杀手的计时器每回合倒数
+        await killerCountDown(app);
+        //[黑帮老大]: 场上所有小弟移动一步
+        await gansterStep(app);
+        if (e) {
+          var { i, j } = e.target;
+          this.metrics[2]++;
+          //[赏金猎人]: 检查是否为赏金线索并触发
+          await fortuneTargetBonus(app, this.boxArray[i][j]);
+        }
       }
 
       return await this.stepBeforeAppear(e);
     },
     async stepBeforeAppear(e) {
       //在角色现身前
-      if (e) {
-        var { i, j } = e.target;
-        //[干扰者]: 如果被干扰，直接跳到点击结束
-        var isBeingJammed = await jamCheck(app, this.boxArray[i][j]);
-        if (isBeingJammed) {
+      var isBangTime = await bangbangCheck(app); //[Bang-Bang]: 是否在暗杀，暗杀是一种特殊的【调查】
+      if (!isBangTime) {
+        if (e) {
+          var { i, j } = e.target;
+          //[干扰者]: 如果被干扰，直接跳到点击结束
+          var isBeingJammed = await jamCheck(app, this.boxArray[i][j]);
+          if (isBeingJammed) {
+            //[女巫]: 和[杀手]一样进行倒数
+            await witchCountDown(app);
+            return await this.stepEndState(e);
+          } else {
+            //[干扰者]: 如果之前已经被干扰，此次调查可以破除干扰
+            delete this.boxArray[i][j].signs["jammed"];
+            delete this.boxArray[i][j].infos["jam-notes"];
+          }
+        } else {
           //[女巫]: 和[杀手]一样进行倒数
           await witchCountDown(app);
-          return await this.stepEndState(e);
-        } else {
-          //[干扰者]: 如果之前已经被干扰，此次调查可以破除干扰
-          delete this.boxArray[i][j].signs["jammed"];
-          delete this.boxArray[i][j].infos["jam-notes"];
         }
-      } else {
-        //[女巫]: 和[杀手]一样进行倒数
-        await witchCountDown(app);
       }
       return await this.stepAppear(e);
     },
     async stepAppear(e) {
       //角色现身
+      var isBangTime = await bangbangCheck(app); //[Bang-Bang]: 是否在暗杀，暗杀是一种特殊的【调查】
       if (e) {
         var { i, j } = e.target;
-        var isCopied = await copiesCheck(app, i, j);
-        if (isCopied) {
-          return await this.stepAppear(e);
+        if (!isBangTime) {
+          var isCopied = await copiesCheck(app, i, j);
+          if (isCopied) {
+            return await this.stepAppear(e);
+          }
         }
 
         //[警长]
         await sheriffCheck(app, this.boxArray[i][j]);
-        await randomPeople[this.boxArray[i][j].roleid](e, app, i, j);
+        var infoName = this.records[this.boxArray[i][j].roleid].infoName;
+        e.srcElement.classList.add(infoName);
+        this.boxArray[i][j].infos[infoName] = true;
+        !isBangTime &&
+          (await randomPeople[this.boxArray[i][j].roleid](e, app, i, j));
+        isBangTime && (await bangbangBanged(app, this.boxArray[i][j]));
         this.boxArray[i][j].shown = true;
         this.records[this.boxArray[i][j].roleid].showedNum++;
-        //[赏金猎人]
-        await fortuneCheck(app, this.boxArray[i][j]);
-        //[女巫]
-        await witchCountDown(app, this.boxArray[i][j]);
+        if (!isBangTime) {
+          //[赏金猎人]: 是否有赏金
+          await fortuneCheck(app, this.boxArray[i][j]);
+          //[女巫]: 是否是暗势力
+          await witchCountDown(app, this.boxArray[i][j]);
+        }
       }
 
       return await this.stepEndState(e);

@@ -1,8 +1,5 @@
 import * as COMMON from "../_common/common.js";
 function gansterOnClick(e, context, i, j) {
-  e.srcElement.classList.add("ganster");
-  context.boxArray[i][j].infos["ganster"] = true;
-
   context.gansters.push(COMMON.setPair(i, j));
   context.boxArray[i][j].signs["ganster-brother-sign"] = true;
   context.boxArray[i][j].infos["ganster-brother-info"] = true;

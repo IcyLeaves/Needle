@@ -1,8 +1,5 @@
 import * as COMMON from "../_common/common.js";
-function volunteerOnClick(e, context, i, j) {
-  e.srcElement.classList.add("volunteer");
-  context.boxArray[i][j].infos["volunteer"] = true;
-}
+function volunteerOnClick(e, context, i, j) {}
 async function volunteerCheck(context, curr) {
   if (context.chances != 1) return;
   var nears = await COMMON.nearFour(context.boxArray, curr.i, curr.j);
