@@ -7,6 +7,11 @@ function bangbangCheck(context) {
 function bangbangBanged(context, curr) {
   curr.signs["bangbang-sign"] = true;
   curr.infos["bangbang-info"] = true;
+  curr.roleid = 1;
+  if (curr.roleid == 0) {
+    context.isGameOver = 0;
+    context.bangbangTimer = 0;
+  }
 
   context.bangbangTimer -= 1;
 }

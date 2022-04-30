@@ -430,9 +430,10 @@ var app = new Vue({
         this.boxArray[i][j].infos[infoName] = true;
         !isBangTime &&
           (await randomPeople[this.boxArray[i][j].roleid](e, app, i, j));
-        isBangTime && (await bangbangBanged(app, this.boxArray[i][j]));
+
         this.boxArray[i][j].shown = true;
         this.records[this.boxArray[i][j].roleid].showedNum++;
+        isBangTime && (await bangbangBanged(app, this.boxArray[i][j]));
         if (!isBangTime) {
           //[赏金猎人]: 是否有赏金
           await fortuneCheck(app, this.boxArray[i][j]);
