@@ -392,11 +392,12 @@ var app = new Vue({
         if (isCopied) {
           return await this.stepAppear(e);
         }
+
+        //[警长]
+        await sheriffCheck(app, this.boxArray[i][j]);
         await randomPeople[this.boxArray[i][j].roleid](e, app, i, j);
         this.boxArray[i][j].shown = true;
         this.records[this.boxArray[i][j].roleid].showedNum++;
-        //[警长]
-        await sheriffCheck(app, this.boxArray[i][j]);
         //[赏金猎人]
         await fortuneCheck(app, this.boxArray[i][j]);
         //[女巫]

@@ -9,7 +9,7 @@ async function sheriffOnClick(e, context, i, j) {
     if (!near || near.shown) init--;
   }
   context.boxArray[i][j].sheriffRemain = init;
-  if (init == 0) await context.animateChances(context.chances);
+  if (init == 0) await context.animateChances(context.chances + 2);
 }
 async function sheriffCheck(context, curr) {
   var nears = await COMMON.nearEight(context.boxArray, curr.i, curr.j);
@@ -18,7 +18,7 @@ async function sheriffCheck(context, curr) {
     if (near.roleid > 0 || (near.roleid == 0 && context.copiesTeam.length > 0))
       near.sheriffRemain--;
     if (near.sheriffRemain == 0 && near.shown == true)
-      await context.animateChances(context.chances);
+      await context.animateChances(context.chances + 2);
   }
 }
 export { sheriffOnClick, sheriffCheck };
